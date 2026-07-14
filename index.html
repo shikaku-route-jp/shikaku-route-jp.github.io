@@ -233,6 +233,11 @@
     .footer-inner{display:flex;justify-content:space-between;gap:20px;align-items:start}
     .footer small{display:block;color:#9fb1c8;max-width:720px;line-height:1.7}
     .footer a{color:#fff}
+    .footer-copy{max-width:760px}
+    .footer-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 13px;font-size:12px}
+    .footer-links a{text-underline-offset:4px}
+    .footer-links a:hover{text-decoration-thickness:2px}
+    .footer-links a:focus-visible{outline:3px solid #f4c76c;outline-offset:4px}
     .empty{grid-column:1/-1;background:#fff;border:1px dashed var(--line);padding:25px;border-radius:16px;text-align:center;color:var(--muted)}
     .directory-more{text-align:center;margin-top:18px}
     .directory-more .btn{min-width:230px}
@@ -615,11 +620,19 @@
 <footer class="footer">
   <div class="wrap footer-inner">
     <div class="brand"><span class="brand-mark">Q</span><span>資格ルート案内室</span></div>
-    <small>
-      本サイトの診断結果、難易度、学習期間は一般的な目安であり、個人差があります。
-      受験資格・試験日程・料金・制度変更は、各試験の公式サイトで必ず確認してください。<br>
-      © <span id="year"></span> 資格ルート案内室
-    </small>
+    <div class="footer-copy">
+      <nav class="footer-links" aria-label="サイト情報">
+        <a href="about.html">運営者情報</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="advertising.html">広告掲載ポリシー</a>
+        <a href="contact.html">お問い合わせ</a>
+      </nav>
+      <small>
+        本サイトの診断結果、難易度、学習期間は一般的な目安であり、個人差があります。
+        受験資格・試験日程・料金・制度変更は、各試験の公式サイトで必ず確認してください。<br>
+        © <span id="year"></span> 資格ルート案内室
+      </small>
+    </div>
   </div>
 </footer>
 

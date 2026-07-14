@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://halosky256.github.io/qualification-route/sitemap.xml

@@ -1,0 +1,137 @@
+:root{
+  --ink:#20201e;
+  --red:#a7332d;
+  --gold:#b1853e;
+  --paper:#fbf8ef;
+  --bg:#eee9dc;
+  --muted:#69665e;
+  --line:#b9b2a5;
+  --footer:#24231f;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{
+  min-height:100vh;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  color:var(--ink);
+  background-color:var(--bg);
+  background-image:repeating-linear-gradient(0deg,rgba(29,29,26,.018) 0,rgba(29,29,26,.018) 1px,transparent 1px,transparent 5px);
+  font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  font-size:16px;
+  line-height:1.9;
+  letter-spacing:.01em;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-underline-offset:4px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible{outline:3px solid var(--red);outline-offset:4px}
+.wrap{width:min(920px,calc(100% - 38px));margin-inline:auto}
+.skip-link{position:absolute;left:-9999px;top:12px;z-index:100}
+.skip-link:focus{left:12px;background:var(--paper);border:2px solid var(--ink);padding:8px 12px}
+
+.site-header{
+  background:var(--paper);
+  border-top:7px solid var(--ink);
+  border-bottom:3px double var(--ink);
+}
+.site-header-inner{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:800;letter-spacing:.13em}
+.brand-mark{
+  width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;
+  background:var(--ink);color:var(--paper);border:1px solid var(--ink);
+  font-family:Georgia,"Times New Roman",serif;font-weight:400;
+}
+.header-label{
+  color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:.14em;
+}
+
+.legal-main{flex:1;padding:54px 0 78px}
+.back-link{
+  display:inline-block;margin-bottom:22px;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:13px;font-weight:700;
+}
+.legal-article{
+  position:relative;background:var(--paper);border:1px solid var(--ink);
+  padding:clamp(27px,5vw,56px);box-shadow:10px 10px 0 rgba(167,51,45,.2);
+}
+.legal-article:after{content:"";position:absolute;inset:8px;border:1px dashed var(--line);pointer-events:none}
+.page-header,.legal-section,.page-meta{position:relative;z-index:1}
+.page-header{padding-bottom:28px;border-bottom:3px double var(--ink)}
+.kicker{
+  margin:0 0 13px;color:var(--red);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:11px;font-weight:800;letter-spacing:.24em;
+}
+h1{margin:0;font-size:clamp(38px,7vw,64px);line-height:1.2;letter-spacing:-.045em}
+.lead{margin:18px 0 0;color:#4f4c45;font-size:17px;line-height:2}
+.legal-section{padding:31px 0;border-bottom:1px solid var(--line)}
+.legal-section:last-of-type{border-bottom:0;padding-bottom:10px}
+h2{margin:0 0 13px;font-size:clamp(23px,4vw,30px);line-height:1.45;letter-spacing:-.025em}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+ul{margin:10px 0 0;padding-left:1.4em}
+li+li{margin-top:7px}
+.facts{display:grid;grid-template-columns:160px 1fr;margin:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+.facts dt,.facts dd{margin:0;padding:14px 16px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.facts dt{
+  background:#f1eadc;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:13px;font-weight:800;
+}
+.note{
+  margin-top:18px;padding:17px 19px;background:#f4eddd;border-left:5px solid var(--gold);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:14px;line-height:1.8;
+}
+.warning{background:#f4e7df;border-left-color:var(--red)}
+.contact-link{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;margin-top:18px;
+  padding:13px 19px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);
+  box-shadow:4px 4px 0 var(--red);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-weight:800;text-decoration:none;
+}
+.contact-link:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--red)}
+.page-meta{
+  margin-top:28px;color:var(--muted);text-align:right;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:12px;
+}
+
+.site-footer{margin-top:auto;background:var(--footer);color:#e8e2d6;border-top:7px solid var(--red);padding:30px 0}
+.footer-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:30px}
+.site-footer .brand-mark{background:var(--paper);color:var(--ink)}
+.footer-copy{max-width:670px}
+.footer-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 13px;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:12px}
+.footer-links a{color:#fff}
+.footer-links a[aria-current="page"]{color:#e9b0aa;text-decoration-thickness:2px}
+.site-footer small{display:block;color:#bdb7aa;font-size:11px;line-height:1.8}
+
+@media(max-width:680px){
+  body{font-size:15px}
+  .wrap{width:min(100% - 24px,920px)}
+  .site-header-inner{min-height:64px}
+  .header-label{display:none}
+  .legal-main{padding:38px 0 58px}
+  .legal-article{padding:28px 20px;box-shadow:6px 6px 0 rgba(167,51,45,.2)}
+  .legal-article:after{inset:6px}
+  h1{font-size:40px}
+  .lead{font-size:15px;line-height:1.85}
+  .legal-section{padding:25px 0}
+  .facts{grid-template-columns:1fr}
+  .facts dt{border-bottom:0;padding-bottom:6px}
+  .facts dd{padding-top:4px}
+  .footer-inner{display:block}
+  .site-footer .brand{margin-bottom:16px}
+}
+
+@media(max-width:390px){
+  .brand{font-size:14px;letter-spacing:.08em}
+  h1{font-size:35px}
+  .legal-article{padding-inline:17px}
+  .footer-links{display:grid;grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.contact-link{transition:none}}
