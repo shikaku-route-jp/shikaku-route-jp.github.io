@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://halosky256.github.io/qualification-route/</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
-  <url>
-    <loc>https://halosky256.github.io/qualification-route/about.html</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
-  <url>
-    <loc>https://halosky256.github.io/qualification-route/privacy.html</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
-  <url>
-    <loc>https://halosky256.github.io/qualification-route/advertising.html</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
-  <url>
-    <loc>https://halosky256.github.io/qualification-route/contact.html</loc>
-    <lastmod>2026-07-13</lastmod>
-  </url>
+  <url><loc>https://halosky256.github.io/qualification-route/</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/about.html</loc><lastmod>2026-07-13</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/privacy.html</loc><lastmod>2026-07-13</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/advertising.html</loc><lastmod>2026-07-13</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/contact.html</loc><lastmod>2026-07-13</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/takken-suitable.html</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/fp3-self-study.html</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/itpassport-vs-fe.html</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/bookkeeping3-vs-fp3.html</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/gyoseishoshi-vs-takken.html</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/chintai-kanrishi-value.html</loc><lastmod>2026-07-14</lastmod></url>
+  <url><loc>https://halosky256.github.io/qualification-route/articles/before-buying-materials.html</loc><lastmod>2026-07-14</lastmod></url>
 </urlset>
