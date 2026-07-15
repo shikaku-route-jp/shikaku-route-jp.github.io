@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://halosky256.github.io/qualification-route/sitemap.xml
+Sitemap: https://shikaku-route-jp.github.io/sitemap.xml
