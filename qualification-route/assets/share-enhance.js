@@ -17,6 +17,16 @@
     const button = document.getElementById("shareX");
     if (!button) return;
 
+    const style = document.createElement("style");
+    style.textContent = `
+      .share-prompt{margin-top:20px;padding:16px 18px;border:1px solid var(--ink);background:#f4eddd;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+      .share-prompt strong{font-size:14px}
+      .share-prompt span{font:500 12px/1.7 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;color:var(--muted);flex:1;min-width:220px}
+      .share-prompt .btn{padding:10px 14px;box-shadow:3px 3px 0 var(--ink)}
+      @media(max-width:680px){.share-prompt{display:block}.share-prompt span{display:block;margin:5px 0 12px}.share-prompt .btn{width:100%}}
+    `;
+    document.head.appendChild(style);
+
     button.textContent = "Xで結果をシェア";
     button.title = "診断結果をXに投稿する";
 
@@ -39,8 +49,6 @@
     }
   }
 
-  // app.js is loaded with defer immediately before this file, so DOM is ready
-  // and the diagnosis result button exists even though the result is hidden.
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", install, { once: true });
   } else {
