@@ -15,3 +15,14 @@
     @media(max-width:390px){h1{font-size:39px}.brand{font-size:14px;letter-spacing:.08em}.top-links{font-size:11px}.preview h2{font-size:22px}.main-qualification{font-size:34px}.qualification-grid{grid-template-columns:1fr}.rank-row{grid-template-columns:27px minmax(0,1fr) 42px}.ad-wrap{width:min(320px,calc(100% - 24px))}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
     @media print{.topbar,.hero,.trust-grid,.ad-wrap,.diagnosis,.articles-callout,.directory,.footer,.affiliate,.share-actions{display:none!important}.result{display:block!important;padding:0}.result-hero,.panel{box-shadow:none;break-inside:avoid}body{background:#fff}}
+
+.exam-panel{position:relative}
+.exam-date-main{font-size:clamp(22px,3vw,30px);font-weight:900;line-height:1.5;margin:2px 0 15px;color:var(--red)}
+.exam-row{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:start;padding:11px 0;border-top:1px solid var(--line);font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.exam-row span{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.06em}
+.exam-row b{font-size:13px;line-height:1.7}
+.exam-note{margin:12px 0 0;color:var(--muted);font-size:12px;line-height:1.8}
+.exam-official{display:inline-flex;margin-top:15px;font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;font-size:12px;font-weight:800}
+.exam-verified{display:block;margin-top:10px;color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;font-size:10px}
+.exam-empty{margin:0;color:var(--muted);font-size:13px}
+.qualification-exam{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);color:var(--red);font:700 11px/1.7 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
