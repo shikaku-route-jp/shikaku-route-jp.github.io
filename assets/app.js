@@ -1,7 +1,7 @@
 (() => {
 "use strict";
 const CATEGORY_LABELS={law:"法律・不動産",finance:"会計・金融・経営",it:"IT・データ",global:"語学・国際・観光",health:"医療・福祉・健康",creative:"事務・クリエイティブ",technical:"技術・現場"};
-const SEARCH_ALIASES={"宅地建物取引士":"宅建","社会保険労務士":"社労士","中小企業診断士":"診断士","危険物取扱者 乙種第4類":"乙4 危険物乙4","第三種電気主任技術者":"電験三種","第二種電気工事士":"二種電工 電工二種","第一種電気工事士":"一種電工 電工一種","実用英語技能検定2級":"英検2級","実用英語技能検定準1級":"英検準1級","情報セキュリティマネジメント":"SG","基本情報技術者":"FE","応用情報技術者":"AP"};
+const SEARCH_ALIASES={"ビジネス実務法務検定2級":"ビジ法2級","FP1級":"1級FP技能士","ネットワークスペシャリスト":"NW ネスペ","総合旅行業務取扱管理者":"総合旅行 旅行業務取扱管理者","消防設備士 甲種第4類":"消防設備士甲4 甲4","ウェブデザイン技能検定2級":"ウェブデザイン2級","宅地建物取引士":"宅建","社会保険労務士":"社労士","中小企業診断士":"診断士","危険物取扱者 乙種第4類":"乙4 危険物乙4","第三種電気主任技術者":"電験三種","第二種電気工事士":"二種電工 電工二種","第一種電気工事士":"一種電工 電工一種","実用英語技能検定2級":"英検2級","実用英語技能検定準1級":"英検準1級","情報セキュリティマネジメント":"SG","基本情報技術者":"FE","応用情報技術者":"AP"};
 const q=(name,category,level,months,utility,tags,goals,strengths,work,entry,next,desc)=>({name,category,level,months,utility,tags,goals,strengths,work,entry,next,desc});
 const QUALIFICATIONS=[
 q("ビジネス実務法務検定3級","law",1,2,"高",["rules","office"],["job","career","daily"],["rules","memory"],["desk","team"],null,"宅地建物取引士","契約・取引の基礎を学び、幅広い職種で法務感覚を生かしやすい検定です。"),
@@ -67,7 +67,15 @@ q("二級ボイラー技士","technical",2,4,"高",["technical","field","rules"]
 q("消防設備士 乙種第6類","technical",3,5,"高",["technical","field","safety"],["job","career","side"],["memory","hands"],["field","solo"],"危険物取扱者 乙種第4類","第二種電気工事士","消火器の整備・点検に関わる国家資格で、設備管理の資格セットに加えやすい資格です。"),
 q("第三種電気主任技術者","technical",5,18,"非常に高い",["technical","math","field"],["career","income","stability"],["numbers","logical","memory"],["field","solo"],"第二種電気工事士","第一種電気工事士","電気設備の保安監督を担う難関国家資格で、設備・エネルギー分野で高い専門性を示せます。"),
 q("2級建築施工管理技士補","technical",3,7,"非常に高い",["construction","field","management"],["job","career","income"],["rules","communication","logical"],["field","team"],"CAD利用技術者試験2級","第二種電気工事士","建築工事の工程・品質・安全管理を学び、施工管理職への入口になります。"),
-q("CAD利用技術者試験2級","technical",2,4,"高",["technical","design","digital"],["job","career","side"],["operation","logical","creative"],["desk","team"],null,"2級建築施工管理技士補","CADの基礎知識と図面理解を示し、設計・製造・建築分野への入口に向きます。")
+q("CAD利用技術者試験2級","technical",2,4,"高",["technical","design","digital"],["job","career","side"],["operation","logical","creative"],["desk","team"],null,"2級建築施工管理技士補","CADの基礎知識と図面理解を示し、設計・製造・建築分野への入口に向きます。"),
+q("ビジネス実務法務検定2級","law",3,4,"高",["rules","office","business"],["job","career","stability"],["rules","memory"],["desk","team"],"ビジネス実務法務検定3級","宅地建物取引士","契約や取引に関する法律知識を一段深く学び、企業実務で法務感覚を高めたい人に向く検定です。"),
+q("FP1級","finance",5,12,"非常に高い",["money","consulting","finance"],["career","independence","income"],["numbers","communication","rules"],["desk","people"],"FP2級","中小企業診断士","家計・資産設計の高度な知識を扱う上位級で、受検資格の確認が必要な場合があります。"),
+q("ネットワークスペシャリスト","it",5,12,"非常に高い",["network","digital","security"],["career","income","stability"],["logical","operation","rules"],["desk","team"],"応用情報技術者","情報処理安全確保支援士","ネットワークの設計・構築・運用を高度に扱う情報処理技術者試験の専門区分です。"),
+q("総合旅行業務取扱管理者","global",4,8,"非常に高い",["travel","rules","global"],["job","career","stability"],["memory","communication","rules"],["desk","people"],"国内旅行業務取扱管理者","全国通訳案内士","国内と海外の旅行業務を幅広く扱い、旅行業界で専門性を高めたい人向けの国家資格です。"),
+q("通関士","global",4,10,"非常に高い",["trade","global","rules"],["job","career","stability"],["rules","memory","language"],["desk","team"],"貿易実務検定C級",null,"輸出入の通関手続や関税法令を扱う国家資格で、貿易・物流分野の専門職を目指す人に向きます。"),
+q("第二種衛生管理者","health",2,3,"高",["labor","health","rules"],["job","career","stability"],["rules","memory"],["desk","field"],"メンタルヘルス・マネジメント検定II種","第一種衛生管理者","一定の業種における職場の安全衛生管理に関する基礎的な国家資格です。"),
+q("ウェブデザイン技能検定2級","creative",3,6,"高",["creative","digital","web"],["job","career","side"],["creative","operation","logical"],["desk","solo"],"ウェブデザイン技能検定3級",null,"Web制作の知識と技能を一段深く扱い、制作実務の基礎力を高めたい人に向く国家検定です。"),
+q("消防設備士 甲種第4類","technical",4,8,"非常に高い",["technical","field","safety"],["job","career","side"],["memory","hands","rules"],["field","solo"],"消防設備士 乙種第6類","第二種電気工事士","自動火災報知設備などの工事・整備・点検に関わる専門性の高い国家資格です。")
 ];
 const QUESTIONS=[
 {key:"interests",max:2,title:"興味がある分野は？",help:"特に気になるものを最大2つ選んでください。",options:[["law","法律・不動産","ルール、契約、権利、不動産"],["finance","会計・金融・経営","お金、企業、経営、資産"],["it","IT・データ","プログラミング、AI、分析"],["global","語学・国際・観光","英語、中国語、海外、旅行"],["health","医療・福祉・健康","人の生活、薬、介護、職場環境"],["creative","事務・クリエイティブ","PC、デザイン、Web、接遇"],["technical","技術・現場","電気、設備、建築、ものづくり"]]},
