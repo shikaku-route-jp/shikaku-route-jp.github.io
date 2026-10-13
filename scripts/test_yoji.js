@@ -10,17 +10,56 @@ function randomFrom(seed) {
   };
 }
 
-test("all 50 words have unique IDs, four kanji, and complete learning cards", () => {
-  assert.equal(WORDS.length, 50);
-  assert.equal(new Set(WORDS.map(word => word.id)).size, 50);
-  assert.equal(new Set(WORDS.map(word => word.word)).size, 50);
+test("all 200 words have unique IDs, four kanji, and complete learning cards", () => {
+  assert.equal(WORDS.length, 200);
+  assert.equal(new Set(WORDS.map(word => word.id)).size, 200);
+  assert.equal(new Set(WORDS.map(word => word.word)).size, 200);
   for (const word of WORDS) {
     assert.equal([...word.word].length, 4, word.word);
     assert.match(word.reading, /^[ぁ-ゖー]+$/u, word.word);
     for (const field of ["meaning", "hint", "example"]) assert.ok(word[field].length > 5, word.word);
   }
-  assert.equal(WORDS.filter(word => word.range === "basic").length, 25);
-  assert.equal(WORDS.filter(word => word.range === "step").length, 25);
+  assert.equal(WORDS.filter(word => word.range === "basic").length, 100);
+  assert.equal(WORDS.filter(word => word.range === "step").length, 100);
+});
+
+test("existing progress still refers to the same words and ranges", () => {
+  const legacyWords = ["一期一会", "一石二鳥", "一喜一憂", "十人十色", "以心伝心", "自業自得", "試行錯誤", "温故知新", "臨機応変", "切磋琢磨", "暗中模索", "五里霧中", "四面楚歌", "危機一髪", "絶体絶命", "因果応報", "起死回生", "右往左往", "一心不乱", "無我夢中", "一長一短", "本末転倒", "優柔不断", "有言実行", "大器晩成", "猪突猛進", "馬耳東風", "呉越同舟", "臥薪嘗胆", "疑心暗鬼", "電光石火", "羊頭狗肉", "針小棒大", "前代未聞", "付和雷同", "異口同音", "七転八起", "七転八倒", "厚顔無恥", "傍若無人", "天衣無縫", "明鏡止水", "晴耕雨読", "不撓不屈", "泰然自若", "森羅万象", "画竜点睛", "換骨奪胎", "竜頭蛇尾", "捲土重来"];
+  const oldProgress = {};
+  legacyWords.forEach((word, i) => {
+    const id = "yoji-" + String(i + 1).padStart(2, "0");
+    const current = WORDS.find(item => item.id === id);
+    assert.equal(current.word, word);
+    assert.equal(current.range, i < 25 ? "basic" : "step");
+    oldProgress[id] = { learned: true, skills: { reading: { review: true, streak: 1 } } };
+  });
+  const restored = sanitizeRecords(JSON.parse(JSON.stringify(oldProgress)));
+  assert.equal(Object.keys(restored).length, 50);
+  assert.ok(Object.values(restored).every(record => record.learned && needsReview(record, "reading")));
+});
+
+test("accepted spelling variants never appear as wrong fill-in answers", () => {
+  for (const [word, variant] of [["波瀾万丈", "波乱万丈"], ["岡目八目", "傍目八目"], ["和洋折衷", "和洋折中"]]) {
+    const entry = WORDS.find(item => item.word === word);
+    for (let seed = 0; seed < 1500; seed++) {
+      const question = makeQuestion(entry, "writing", randomFrom(seed));
+      for (const option of question.options.filter((_, i) => i !== question.answer)) {
+        assert.notEqual(question.display.replace("□", option), variant);
+      }
+    }
+  }
+});
+
+test("page counts and both practice ranges match the actual dataset", () => {
+  const { readFileSync } = require("node:fs");
+  const { join } = require("node:path");
+  const page = readFileSync(join(__dirname, "../yoji.html"), "utf8");
+  const home = readFileSync(join(__dirname, "../index.html"), "utf8");
+  assert.ok(page.includes("<strong>" + WORDS.length + "語</strong>"));
+  assert.ok(home.includes(WORDS.length + "語をランダムに学び"));
+  assert.ok(page.includes("基本の" + WORDS.filter(word => word.range === "basic").length + "語"));
+  assert.ok(page.includes("挑戦する" + WORDS.filter(word => word.range === "step").length + "語"));
+  assert.equal(page.includes("50語"), false);
 });
 
 test("random practice respects range and size without repeated words", () => {

@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#eee9dc">
   <title>四字熟語練習帳｜意味・読み・穴埋めを練習｜資格ルート案内室</title>
-  <meta name="description" content="四字熟語が苦手な人のための無料練習帳。50語の意味・読み・覚え方を確認して、ランダム問題と苦手の復習に取り組めます。登録不要。">
+  <meta name="description" content="四字熟語が苦手な人のための無料練習帳。200語の意味・読み・覚え方を確認して、ランダム問題と苦手の復習に取り組めます。登録不要。">
   <link rel="canonical" href="https://shikaku-route-jp.github.io/yoji.html">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ja_JP">
   <meta property="og:site_name" content="資格ルート案内室">
   <meta property="og:title" content="四字熟語練習帳｜資格ルート案内室">
-  <meta property="og:description" content="まず意味から。50語を少しずつ覚える無料の四字熟語練習帳。">
+  <meta property="og:description" content="まず意味から。200語を少しずつ覚える無料の四字熟語練習帳。">
   <meta property="og:url" content="https://shikaku-route-jp.github.io/yoji.html">
   <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="assets/site.css">
@@ -24,13 +24,13 @@
   <main class="yoji-page">
     <section class="yoji-intro wrap">
       <div><div class="eyebrow"><span class="eyebrow-dot"></span>知らない言葉から、少しずつ。</div><h1>四字熟語<span>練習帳</span></h1><p class="yoji-lead">意味も、読みも、書き方も。<br>まずは答えを見ながら、ひとつずつ覚えよう。</p></div>
-      <aside class="yoji-stamp" aria-label="練習帳の概要"><div class="section-kicker">漢字の練習 / VOL. 01</div><strong>50語</strong><span>無料・登録不要</span><p>学ぶ → 試す → 苦手を復習</p></aside>
+      <aside class="yoji-stamp" aria-label="練習帳の概要"><div class="section-kicker">漢字の練習 / VOL. 01</div><strong>200語</strong><span>無料・登録不要</span><p>学ぶ → 試す → 苦手を復習</p></aside>
     </section>
 
     <section class="wrap yoji-workspace" id="practice">
       <aside class="yoji-sidebar">
         <div class="section-kicker">YOUR NOTEBOOK</div><h2>今日の小さな一歩</h2>
-        <dl class="yoji-stats"><div><dt>覚えた語</dt><dd><span id="learnedCount">0</span><small> / 50</small></dd></div><div><dt>苦手の復習</dt><dd><span id="reviewCount">0</span><small>語</small></dd></div></dl>
+        <dl class="yoji-stats"><div><dt>覚えた語</dt><dd><span id="learnedCount">0</span><small> / 200</small></dd></div><div><dt>苦手の復習</dt><dd><span id="reviewCount">0</span><small>語</small></dd></div></dl>
         <p class="yoji-small">「覚えた」は自分で付ける印です。問題で間違えた語は苦手に残り、同じ練習形式で2回続けて正解すると外れます。</p>
         <p class="yoji-small" id="storageNote">記録はこのブラウザに保存します。別の端末とは共有されません。</p>
         <details class="yoji-reset"><summary>記録を整理する</summary><p class="yoji-small">覚えた印と苦手の記録を消します。</p><button class="yoji-text-btn" id="resetRecords" type="button">学習記録を消す</button></details>
@@ -46,7 +46,7 @@
             <label class="yoji-mode"><input type="radio" name="studyMode" value="reading"><span><b>読みを選ぶ</b><small>どう読む？ 4択で確認</small></span></label>
             <label class="yoji-mode"><input type="radio" name="studyMode" value="writing"><span><b>漢字を埋める</b><small>抜けている1字を選ぶ</small></span></label>
           </div></fieldset>
-          <div class="yoji-settings"><label>言葉の範囲<select id="wordRange"><option value="basic">まずは基本の25語</option><option value="step">少し挑戦する25語</option><option value="all">すべての50語</option></select></label><label>1回の語数<select id="sessionSize"><option value="3">3語</option><option value="5" selected>5語</option><option value="10">10語</option></select></label></div>
+          <div class="yoji-settings"><label>言葉の範囲<select id="wordRange"><option value="basic">まずは基本の100語</option><option value="step">少し挑戦する100語</option><option value="all">すべての200語</option></select></label><label>1回の語数<select id="sessionSize"><option value="3">3語</option><option value="5" selected>5語</option><option value="10">10語</option></select></label></div>
           <div class="yoji-start-actions"><button class="btn btn-primary" id="startRandom" type="button">ランダムに始める →</button><button class="btn" id="startReview" type="button">苦手を復習する</button></div>
           <p class="yoji-status" id="setupStatus" role="status"></p>
           <p class="yoji-small yoji-scope">漢検の学習を始める人にも使える基礎練習です。難易度はこの練習帳の目安で、特定の級の出題範囲を網羅した教材ではありません。</p>
@@ -75,6 +75,6 @@
     <noscript><p class="wrap">練習帳を利用するにはブラウザのJavaScriptを有効にしてください。</p></noscript>
   </main>
   <footer class="footer"><div class="wrap footer-inner"><a class="brand" href="./"><span class="brand-mark">Q</span><span>資格ルート案内室</span></a><div class="footer-copy"><nav class="footer-links" aria-label="サイト情報"><a href="./#diagnosis">資格診断</a><a href="articles/">資格選びの記事</a><a href="privacy.html">プライバシーポリシー</a><a href="contact.html">お問い合わせ</a></nav><small>「漢検」は公益財団法人 日本漢字能力検定協会の登録商標です。この練習帳は協会の公式教材ではありません。<br>© 2026 資格ルート案内室</small></div></div></footer>
-  <script src="assets/yoji-study.js" defer></script>
+  <script src="assets/yoji-study.js?v=20261013-200" defer></script>
 </body>
 </html>
