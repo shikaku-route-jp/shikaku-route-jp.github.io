@@ -22,5 +22,5 @@ jobs:
         run: python scripts/validate_site.py
       - name: Check exam schedule freshness
         run: python scripts/check_exam_dates.py
-      - name: Check four-character idiom practice
-        run: node --test scripts/test_yoji.js
+      - name: Check idiom practice and learning guidance
+        run: node --test scripts/test_yoji.js scripts/test_learning_guide.js

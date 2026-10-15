@@ -26,3 +26,38 @@
 .exam-verified{display:block;margin-top:10px;color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;font-size:10px}
 .exam-empty{margin:0;color:var(--muted);font-size:13px}
 .qualification-exam{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);color:var(--red);font:700 11px/1.7 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+
+/* Keep optional advertising hidden even when a component sets display:flex. */
+[hidden]{display:none!important}
+.learning-guide h3{overflow-wrap:anywhere}
+.learning-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
+.learning-option{min-width:0;border:1px solid var(--line);padding:18px}
+.learning-option h4{margin:0 0 9px;font-size:17px;line-height:1.6}
+.learning-option p,.learning-option dl{margin:0;font-size:13px;color:var(--muted)}
+.learning-option dl{margin-top:14px}
+.learning-option dt{font-weight:800;color:var(--ink);margin-top:10px}
+.learning-option dd{margin:2px 0 0}
+.learning-tip{border-left:3px solid var(--gold);padding-left:12px;margin:18px 0;font-size:13px}
+.learning-articles{font-size:13px;margin:16px 0}
+.material-search{border-top:1px solid var(--line);padding-top:18px;margin-top:20px}
+.material-search label{display:block;font-size:13px;font-weight:800;margin-bottom:8px}
+.material-search-row{display:flex;gap:12px;align-items:stretch}
+.material-search-row input{width:100%;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:12px;font-size:16px;border-radius:0}
+.material-search-row .btn{flex:0 0 auto;font-size:13px}
+.material-copy-status{font-size:12px;color:var(--muted);margin:10px 0;min-height:1.9em}
+.material-shop{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#f4eddd;padding:18px}
+.material-shop p{font-weight:800;font-size:16px;margin:6px 0}
+.material-shop small{display:block;color:var(--muted);font-size:12px;max-width:620px}
+.material-banner{flex:0 0 auto}
+.material-banner a{display:inline-flex;min-height:44px;align-items:center}
+.btn-aff{white-space:normal;text-align:center;overflow-wrap:anywhere}
+@media(max-width:680px){
+  .learning-options{grid-template-columns:1fr}
+  .material-search-row{flex-direction:column}
+  .material-shop{display:block;padding:15px}
+  .material-banner{margin-top:14px}
+}
+@media print{.material-search,.material-shop,.learning-guide .disclosure{display:none!important}}
+
+.result-next-step{margin:20px 0 0;font:800 14px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.result-next-step a{display:inline-flex;align-items:center;min-height:44px}
