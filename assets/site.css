@@ -61,6 +61,3 @@
 
 .result-next-step{margin:20px 0 0;font:800 14px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
 .result-next-step a{display:inline-flex;align-items:center;min-height:44px}
-
-/* The affiliate alternative stays separate from the provider-owned ad slot. */
-.ad-primary{line-height:0}.ad-fallback[hidden]{display:none!important}.ad-fallback{padding:10px 14px;background:var(--paper);font:500 13px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}.ad-fallback p{margin:0 0 10px}.ad-fallback .ad-fallback-label{font-size:10px;font-weight:700;color:var(--muted)}.ad-fallback a{display:inline-flex;align-items:center;justify-content:center;min-height:44px}.ad-fallback .ad-fallback-note{font-size:10px;color:var(--muted);margin:6px 0 0}
