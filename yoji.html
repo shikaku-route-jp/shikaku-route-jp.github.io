@@ -23,7 +23,7 @@
   <header class="topbar"><div class="wrap topbar-inner"><a class="brand" href="./"><span class="brand-mark">Q</span><span>資格ルート案内室</span></a><nav class="top-links" aria-label="主要メニュー"><a href="./#diagnosis">資格診断</a><a href="articles/">記事</a><a href="yoji.html" aria-current="page">漢字の練習</a></nav></div></header>
   <main class="yoji-page">
     <section class="yoji-intro wrap">
-      <div><div class="eyebrow"><span class="eyebrow-dot"></span>知らない言葉から、少しずつ。</div><h1>四字熟語<span>練習帳</span></h1><p class="yoji-lead">意味も、読みも、書き方も。<br>まずは答えを見ながら、ひとつずつ覚えよう。</p></div>
+      <div><div class="eyebrow"><span class="eyebrow-dot"></span>知らない言葉から、少しずつ。</div><h1>四字熟語<span>練習帳</span></h1><p class="yoji-lead">意味も、読みも、漢字の穴埋めも。<br>まずは答えを見ながら、ひとつずつ覚えよう。</p></div>
       <aside class="yoji-stamp" aria-label="練習帳の概要"><div class="section-kicker">漢字の練習 / VOL. 01</div><strong>200語</strong><span>無料・登録不要</span><p>学ぶ → 試す → 苦手を復習</p></aside>
     </section>
 
@@ -41,17 +41,18 @@
       <div class="yoji-main">
         <section class="yoji-sheet" id="setupPanel" aria-labelledby="setupTitle">
           <div class="yoji-sheet-top"><span class="section-kicker">はじめの一枚</span><span class="yoji-tag">1回 3〜10語</span></div>
-          <h2 id="setupTitle">何から始める？</h2><p class="yoji-help">初めてなら「まず覚える」。知らない言葉は、答えを見てから練習して大丈夫。</p>
+          <h2 id="setupTitle">何から始める？</h2><p class="yoji-help">初めてなら「まず覚える」から。意味を選ぶ → 読みを選ぶ → 漢字を埋めるの順に試し、最後は紙に4字を書いてみましょう。</p>
           <fieldset class="yoji-fieldset"><legend>練習のしかた</legend><div class="yoji-mode-grid">
             <label class="yoji-mode"><input type="radio" name="studyMode" value="learn" checked><span><b>まず覚える</b><small>意味・読み・覚え方を見る</small></span></label>
             <label class="yoji-mode"><input type="radio" name="studyMode" value="meaning"><span><b>意味を選ぶ</b><small>どんな意味？ 4択で確認</small></span></label>
             <label class="yoji-mode"><input type="radio" name="studyMode" value="reading"><span><b>読みを選ぶ</b><small>どう読む？ 4択で確認</small></span></label>
             <label class="yoji-mode"><input type="radio" name="studyMode" value="writing"><span><b>漢字を埋める</b><small>抜けている1字を選ぶ</small></span></label>
           </div></fieldset>
+          <p class="yoji-small">基本の100語に慣れたら、「言葉の範囲」を「少し挑戦する100語」に切り替えて進めましょう。</p>
           <div class="yoji-settings"><label>言葉の範囲<select id="wordRange"><option value="basic">まずは基本の100語</option><option value="step">少し挑戦する100語</option><option value="all">すべての200語</option></select></label><label>1回の語数<select id="sessionSize"><option value="3">3語</option><option value="5" selected>5語</option><option value="10">10語</option></select></label></div>
           <div class="yoji-start-actions"><button class="btn btn-primary" id="startRandom" type="button">ランダムに始める →</button><button class="btn" id="startReview" type="button">苦手を復習する</button></div>
           <p class="yoji-status" id="setupStatus" role="status"></p>
-          <p class="yoji-small yoji-scope">漢検の学習を始める人にも使える基礎練習です。難易度はこの練習帳の目安で、特定の級の出題範囲を網羅した教材ではありません。</p>
+          <p class="yoji-small yoji-scope">漢検準2級から準1級を目指す方の補助練習にも。基本・挑戦は当サイト独自の区分で、特定の級の出題範囲を網羅した教材ではありません。級別教材や公式の問題例と組み合わせて使ってください。</p>
         </section>
 
         <section class="yoji-sheet" id="studyPanel" aria-labelledby="questionTitle" hidden>
