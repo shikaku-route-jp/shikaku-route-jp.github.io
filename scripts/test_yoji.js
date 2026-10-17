@@ -56,7 +56,8 @@ test("page counts and both practice ranges match the actual dataset", () => {
   const page = readFileSync(join(__dirname, "../yoji.html"), "utf8");
   const home = readFileSync(join(__dirname, "../index.html"), "utf8");
   assert.ok(page.includes("<strong>" + WORDS.length + "語</strong>"));
-  assert.ok(home.includes(WORDS.length + "語をランダムに学び"));
+  assert.ok(home.includes('href="yoji.html">四字熟語練習帳</a>'));
+  assert.equal(home.includes('id="learning"'), false, "supplementary practice stays out of the main diagnosis flow");
   assert.ok(page.includes("基本の" + WORDS.filter(word => word.range === "basic").length + "語"));
   assert.ok(page.includes("挑戦する" + WORDS.filter(word => word.range === "step").length + "語"));
   assert.equal(page.includes("50語"), false);

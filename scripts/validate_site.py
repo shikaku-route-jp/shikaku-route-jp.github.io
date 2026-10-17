@@ -4,6 +4,12 @@ from pathlib import Path
 from urllib.parse import urlsplit, unquote
 import re
 import sys
+import json
+import struct
+import xml.etree.ElementTree as ET
+from datetime import date
+from site_common import BASE, Page, content_pages, page_url
+from generate_metadata import modified_day
 
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
@@ -100,10 +106,68 @@ for html in ROOT.rglob("*.html"):
         if stale in text:
             errors.append(f"{html.relative_to(ROOT)}: stale copy {stale}")
 
+# 5) All indexable pages: sitemap coverage, self-canonical, cards and JSON-LD.
+namespace = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+try:
+    tree = ET.fromstring(sitemap)
+    listed = [(node.findtext("s:loc", namespaces=namespace), node.findtext("s:lastmod", namespaces=namespace)) for node in tree.findall("s:url", namespace)]
+except ET.ParseError as exc:
+    errors.append(f"sitemap XML invalid: {exc}"); listed = []
+urls = [url for url, _ in listed]
+if len(urls) != len(set(urls)): errors.append("duplicate URLs in sitemap")
+expected = {page_url(path) for path, _ in content_pages()}
+if set(urls) != expected:
+    errors.append(f"sitemap inventory mismatch: missing={sorted(expected-set(urls))}, extra={sorted(set(urls)-expected)}")
+days = dict(listed)
+for path, page in content_pages(include_noindex=True):
+    rel = path.relative_to(ROOT); url = page_url(path)
+    if page.canonicals != [url]: errors.append(f"{rel}: canonical must be exactly its own URL ({url})")
+    if page.meta.get("og:url") != url: errors.append(f"{rel}: og:url does not match canonical")
+    if page.meta.get("twitter:card") != "summary_large_image": errors.append(f"{rel}: large Twitter card missing")
+    if not page.icons: errors.append(f"{rel}: favicon missing")
+    image = page.meta.get("og:image", "")
+    if not image.startswith(BASE+"/") or not (ROOT/image.removeprefix(BASE+"/")).is_file(): errors.append(f"{rel}: og:image must reference an existing site asset")
+    if page.meta.get("twitter:image") != image: errors.append(f"{rel}: Twitter/OG image mismatch")
+    if url in days:
+        try:
+            parsed = date.fromisoformat(days[url])
+            if parsed > date.today(): errors.append(f"{rel}: lastmod is in the future")
+            if days[url] != modified_day(path): errors.append(f"{rel}: sitemap lastmod is stale relative to Git")
+        except (ValueError,TypeError): errors.append(f"{rel}: invalid sitemap lastmod")
+    article = path.parent.name == "articles" and path.name != "index.html"
+    types = []
+    for raw in page.jsonld:
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            errors.append(f"{rel}: broken JSON-LD: {exc}"); continue
+        if not isinstance(data,dict): errors.append(f"{rel}: JSON-LD object expected"); continue
+        for obj in data.get("@graph",[data]):
+            kind=obj.get("@type");types.append(kind)
+            if kind=="Article":
+                for required in ("author","datePublished","dateModified","image","headline"):
+                    if not obj.get(required): errors.append(f"{rel}: Article.{required} missing")
+                if obj.get("dateModified")!=days.get(url): errors.append(f"{rel}: Article dateModified/sitemap mismatch")
+                if obj.get("datePublished", "9999")>obj.get("dateModified", ""): errors.append(f"{rel}: published date follows modified date")
+            if kind=="BreadcrumbList":
+                crumbs=obj.get("itemListElement",[])
+                if [x.get("position") for x in crumbs]!=list(range(1,len(crumbs)+1)):errors.append(f"{rel}: breadcrumb positions invalid")
+                if not crumbs or crumbs[-1].get("item")!=url:errors.append(f"{rel}: breadcrumb does not end at this page")
+    if article and not {"Article","BreadcrumbList"}.issubset(types):errors.append(f"{rel}: article or breadcrumb schema missing")
+
+png=(ROOT/"assets/ogp.png").read_bytes()
+if png[:8]!=b"\x89PNG\r\n\x1a\n" or struct.unpack(">II",png[16:24])!=(1200,630):errors.append("OG image must be a 1200x630 PNG")
+ads=(ROOT/"ads.txt").read_text()
+if "ca-pub-5008692598953577" in home:
+    if "google.com, pub-5008692598953577, DIRECT, f08c47fec0942fa0" not in ads:errors.append("AdSense publisher missing from ads.txt")
+    for policy in ("privacy.html","advertising.html"):
+        if "Google AdSense" not in (ROOT/policy).read_text():errors.append(f"{policy}: AdSense disclosure missing")
+
+
 if errors:
     print("SITE VALIDATION FAILED")
     for error in errors:
         print("-", error)
     sys.exit(1)
 
-print(f"OK: {len(names)} qualifications, {question_count} questions, {len(article_files)} articles, internal links valid.")
+print(f"OK: {len(names)} qualifications, {question_count} questions, {len(article_files)} articles, {len(expected)} sitemap pages, metadata/schema and internal links valid.")

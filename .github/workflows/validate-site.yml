@@ -1,26 +1,74 @@
-name: Validate site
+name: Validate and sync site metadata
 
 on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * 1"
 
 permissions:
   contents: read
 
+concurrency:
+  group: site-metadata-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   validate:
+    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore: sync site metadata')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate static site
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Generate dates, cards and sitemap from full Git history
+        run: python scripts/generate_metadata.py --write
+      - name: Validate static site and all page metadata
         run: python scripts/validate_site.py
+      - name: Check generated metadata is stable
+        run: python scripts/generate_metadata.py
       - name: Check exam schedule freshness
         run: python scripts/check_exam_dates.py
-      - name: Check idiom practice and learning guidance
-        run: node --test scripts/test_yoji.js scripts/test_learning_guide.js
+      - name: Check diagnosis, mobile interactions and idiom practice
+        run: node --test scripts/test_diagnosis.js scripts/test_yoji.js scripts/test_learning_guide.js
+
+  sync:
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regenerate and validate metadata at current main
+        run: |
+          python scripts/generate_metadata.py --write
+          python scripts/validate_site.py
+      - name: Save generated metadata and request a Pages rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- '*.html' sitemap.xml; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- '*.html' sitemap.xml
+          git commit -m 'chore: sync site metadata'
+          git push origin HEAD:main
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent

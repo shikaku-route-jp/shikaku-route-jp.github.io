@@ -2,6 +2,7 @@
   "use strict";
 
   const ARTICLES = {
+    "日商簿記3級": ["bookkeeping3-self-study-months.html", "簿記3級の独学の進め方を読む"],
     "宅地建物取引士": ["takken-suitable.html", "宅建の仕事内容と向いている人を読む"],
     "FP3級": ["fp3-self-study.html", "FP3級の独学の進め方を読む"],
     "ITパスポート": ["itpassport-vs-fe.html", "ITパスポートと基本情報の違いを読む"],
@@ -40,6 +41,7 @@
     document.getElementById("learningSummary").textContent = guide.summary;
     document.getElementById("learningTip").textContent = guide.tip;
     document.getElementById("materialKeyword").value = guide.keyword;
+    document.getElementById("materialDirectSearch").href = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(guide.keyword)}/`;
     document.getElementById("materialCopyStatus").textContent = "";
 
     const articles = document.getElementById("learningArticles");
