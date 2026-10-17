@@ -11,7 +11,7 @@ function element(){const attrs={},classes=new Set();return {children:[],listener
 function boot(reduced=false){
  const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,element()]));const shell=element();
  const document={getElementById(id){assert.ok(nodes.has(id),'missing '+id);return nodes.get(id)},createElement(){return element()},querySelector(){return shell},querySelectorAll(){return []}};
- const window={matchMedia(){return {matches:reduced}},print(){},open(){}};
+ const window={innerHeight:800,scrollY:200,scrollTo(options){this.lastScroll=options},matchMedia(){return {matches:reduced}},print(){},open(){}};
  const ctx=vm.createContext({window,document,location:{href:'https://shikaku-route-jp.github.io/'},navigator:{},setTimeout(){}});
  for(const name of ['exam-dates.js','qualification-sources.js','qualification-pages.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,'assets',name),'utf8'),ctx);
  return {window,nodes,shell,api:window.QualificationDiagnosis};
@@ -40,7 +40,7 @@ test('question progress, selection, previous and restart stay in sync',()=>{
  const {nodes,shell}=boot();assert.equal(nodes.get('quizProgress').getAttribute('aria-valuenow'),'1');
  nodes.get('answerGrid').children[0].listeners.click();assert.equal(nodes.get('answerGrid').children[0].getAttribute('aria-pressed'),'true');
  nodes.get('nextBtn').listeners.click();assert.equal(nodes.get('qCount').textContent,'Q2 / 10');assert.equal(nodes.get('quizProgress').getAttribute('aria-valuenow'),'2');
- assert.equal(nodes.get('qTitle').focused,true);assert.equal(shell.scrolled.behavior,'smooth');
+ assert.equal(nodes.get('qTitle').focused,undefined);assert.equal(shell.scrolled,undefined);
  nodes.get('backBtn').listeners.click();assert.equal(nodes.get('qCount').textContent,'Q1 / 10');assert.equal(nodes.get('nextBtn').disabled,false);
  nodes.get('restartBtn').listeners.click();assert.equal(nodes.get('quizProgress').getAttribute('aria-valuenow'),'1');assert.equal(nodes.get('nextBtn').disabled,true);
 });
@@ -66,4 +66,25 @@ test('valid answers always yield finite ordered scores without mutating caller a
   assert.equal(ranked.length,100);assert.equal(new Set(ranked.map(q=>q.name)).size,100);assert.equal(JSON.stringify(a),saved);
   assert.ok(ranked.every((q,i)=>Number.isFinite(q.score)&&(i===0||q.score<=ranked[i-1].score)));
  }
+});
+
+test('selecting answers keeps the same buttons and does not move pointer focus',()=>{
+ const {nodes}=boot();const first=nodes.get('answerGrid').children[0];
+ first.listeners.click();assert.equal(nodes.get('answerGrid').children[0],first);assert.equal(first.focused,undefined);
+ assert.equal(first.getAttribute('aria-pressed'),'true');first.listeners.click();assert.equal(first.getAttribute('aria-pressed'),'false');
+ assert.equal(nodes.get('nextBtn').disabled,true);
+});
+test('visible question switches do not scroll; off-screen questions move instantly',()=>{
+ const {nodes,window,shell}=boot();const title=nodes.get('qTitle');
+ title.getBoundingClientRect=()=>({top:110,bottom:170});shell.getBoundingClientRect=()=>({top:-220});
+ nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click({detail:1});
+ assert.equal(window.lastScroll,undefined);assert.equal(title.focused,undefined);
+ title.getBoundingClientRect=()=>({top:-160,bottom:-100});
+ nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click({detail:1});
+ assert.equal(window.lastScroll.behavior,'instant');assert.equal(window.lastScroll.top,0);
+});
+test('keyboard navigation still announces the new question without animated scrolling',()=>{
+ const {nodes,window}=boot();nodes.get('qTitle').getBoundingClientRect=()=>({top:110,bottom:170});
+ nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click({detail:0});
+ assert.equal(nodes.get('qTitle').focused,true);assert.equal(window.lastScroll,undefined);
 });
