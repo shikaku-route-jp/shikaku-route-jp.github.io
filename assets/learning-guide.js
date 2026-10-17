@@ -33,10 +33,34 @@
     };
   }
 
+  let fp3CardMounted = false;
+  function renderProduct(main) {
+    const offer = document.getElementById("fp3ProductOffer");
+    const fallback = document.getElementById("materialFallback");
+    const isFp3 = main.name === "FP3級";
+    offer.hidden = !isFp3;
+    fallback.hidden = isFp3;
+    if (!isFp3 || fp3CardMounted) return;
+    const template = document.getElementById("fp3AffiliateTemplate");
+    if (!template?.content) return;
+    const fragment = template.content.cloneNode(true);
+    // Keep the supplied advertising script unchanged. A fresh script element is
+    // needed to activate the otherwise inert template when this result is shown.
+    fragment.querySelectorAll("script").forEach(original => {
+      const script = document.createElement("script");
+      for (const attribute of original.attributes) script.setAttribute(attribute.name, attribute.value);
+      script.textContent = original.textContent;
+      original.replaceWith(script);
+    });
+    document.getElementById("fp3ProductCard").appendChild(fragment);
+    fp3CardMounted = true;
+  }
+
   function render(main, goal) {
     const title = document.getElementById("learningTitle");
     if (!title) return;
     const guide = build(main, goal);
+    renderProduct(main);
     title.textContent = guide.title;
     document.getElementById("learningSummary").textContent = guide.summary;
     document.getElementById("learningTip").textContent = guide.tip;

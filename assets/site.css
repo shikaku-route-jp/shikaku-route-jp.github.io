@@ -83,3 +83,5 @@
 .quiz-main{min-width:0}@supports(overflow:clip){body{overflow-x:clip}}
 
 .quiz-main{overflow-anchor:none}
+
+.fp3-product-offer{margin:22px 0;padding:18px 0;border-top:1px solid var(--line)}.fp3-product-offer>p{font-size:13px;line-height:1.8}.fp3-product-card{min-width:0;min-height:240px;overflow-wrap:anywhere}

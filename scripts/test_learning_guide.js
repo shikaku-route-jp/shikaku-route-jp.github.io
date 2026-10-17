@@ -142,3 +142,30 @@ test("advertiser destination and affiliate identity are preserved with accurate 
   assert.match(html, /src="\/\/image\.moshimo\.com\/af-img\/0032\/000000000616\.gif" width="88" height="31"/);
   assert.match(html, /href="#rakuten-books"/);
 });
+
+test("FP3 product card loads once, only for the matching result", () => {
+  const { api, elements } = environment();
+  let mounts = 0;
+  elements.get("fp3AffiliateTemplate").content = {
+    cloneNode() {
+      mounts++;
+      return { querySelectorAll() { return []; } };
+    }
+  };
+  const fp = qualifications.find(q => q.name === "FP3級");
+  const other = qualifications.find(q => q.name === "ITパスポート");
+  api.render(other, "job");
+  assert.equal(mounts, 0);
+  assert.equal(elements.get("fp3ProductOffer").hidden, true);
+  assert.equal(elements.get("materialFallback").hidden, false);
+  api.render(fp, "daily");
+  assert.equal(mounts, 1);
+  assert.equal(elements.get("fp3ProductOffer").hidden, false);
+  assert.equal(elements.get("materialFallback").hidden, true);
+  api.render(other, "job");
+  assert.equal(elements.get("fp3ProductOffer").hidden, true);
+  assert.equal(elements.get("materialFallback").hidden, false);
+  api.render(fp, "job");
+  assert.equal(mounts, 1);
+  assert.equal(elements.get("fp3ProductCard").children.length, 1);
+});

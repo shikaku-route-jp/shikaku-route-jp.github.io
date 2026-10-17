@@ -168,7 +168,7 @@ function showResult(){
  const profile=qualificationPage(main.name);$("qualificationDetail").hidden=!profile;if(profile)$("qualificationDetail").href=profile;
  $("ranking").innerHTML=rankingGroups(ranked).map(item=>{const reasons=matchedConditions(item);const profile=qualificationPage(item.name);return `<div class="rank-row"><div class="rank-num">${item.rank}</div><div><div class="rank-name">${profile?`<a href="${profile}">${escapeHtml(item.name)}</a>`:`<span>${escapeHtml(item.name)}</span>`}<small>${categoryLabel(item.category)}</small></div><p class="rank-reasons">一致した条件：${reasons.length?reasons.map(escapeHtml).join("・"):"個別に比較してください"}</p></div><div class="rank-tie">${item.tied?"同率":""}</div></div>`}).join("");
  $("adviceList").innerHTML=adviceFor(main).map(([icon,title,text])=>`<div class="advice"><i>${icon}</i><div><b>${escapeHtml(title)}</b><p>${escapeHtml(text)}</p></div></div>`).join("");
- window.QualificationLearningGuide?.render(main,valueOf("goal"));$("result").classList.add("show");$("mainQualification").focus({preventScroll:true});scrollToPanel($("result"));window.__lastResult={main,ranked,topTies,matches};track("diagnosis_complete",{qualification:main.name,category:main.category});
+ $("result").classList.add("show");window.QualificationLearningGuide?.render(main,valueOf("goal"));$("mainQualification").focus({preventScroll:true});scrollToPanel($("result"));window.__lastResult={main,ranked,topTies,matches};track("diagnosis_complete",{qualification:main.name,category:main.category});
 }
 function revealQuestion(event){
  // Pointer users keep their position. Correct an off-screen heading immediately;
