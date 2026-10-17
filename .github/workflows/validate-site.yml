@@ -17,7 +17,8 @@ concurrency:
 
 jobs:
   validate:
-    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore: sync site metadata')
+    if: >-
+      github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore: sync site metadata')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
