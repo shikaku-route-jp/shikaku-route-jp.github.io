@@ -51,7 +51,9 @@
       link.textContent = `${guide.article[1]} →`;
       articles.appendChild(link);
     }
-    document.getElementById("businessSupport").hidden = !guide.showBusinessSupport;
+    const businessSupport = document.getElementById("businessSupport");
+    businessSupport.open = false;
+    businessSupport.hidden = !guide.showBusinessSupport;
   }
 
   const copyButton = document.getElementById("copyMaterialKeyword");
