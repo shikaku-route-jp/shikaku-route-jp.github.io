@@ -85,3 +85,6 @@
 .quiz-main{overflow-anchor:none}
 
 .fp3-product-offer{margin:22px 0;padding:18px 0;border-top:1px solid var(--line)}.fp3-product-offer>p{font-size:13px;line-height:1.8}.fp3-product-card{min-width:0;min-height:240px;overflow-wrap:anywhere}
+
+.event-product-offer{margin:22px 0;padding-top:18px;border-top:1px solid var(--line)}.event-product-offer h4{margin:8px 0;font-size:17px;line-height:1.6}.event-product-offer>p{font-size:13px;line-height:1.8}.event-product-link{display:flex;align-items:center;gap:18px;min-width:0;overflow-wrap:anywhere;font-size:14px;line-height:1.8}.event-product-link>img{width:128px;height:128px;object-fit:contain;flex:0 0 128px}.event-product-link>span{min-width:0}.event-product-action{display:block;margin-top:10px;font-size:13px}.event-product-link:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+@media(max-width:390px){.event-product-link{gap:12px}.event-product-link>img{width:96px;height:96px;flex-basis:96px}}
