@@ -509,7 +509,10 @@
       if (session && session.index < session.queue.length) elements.markLearned.checked = records[currentWord().id]?.learned === true;
     } catch { /* Keep the current page's usable in-memory record. */ }
   });
-  const requestedMode = new URLSearchParams(window.location.search).get("mode");
+  const practiceParams = new URLSearchParams(window.location.search);
+  const requestedMode = practiceParams.get("mode");
+  const requestedCount = practiceParams.get("count");
+  if (["3", "5", "10"].includes(requestedCount)) document.getElementById("sessionSize").value = requestedCount;
   if (["learn", ...MODES].includes(requestedMode)) {
     document.querySelector('input[name="studyMode"][value="' + requestedMode + '"]').checked = true;
   }

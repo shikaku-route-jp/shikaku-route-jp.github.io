@@ -12,5 +12,13 @@ window.QUALIFICATION_PAGES = {
   "MOS Excel Associate": "qualifications/mos-excel-associate.html",
   "MOS Excel Expert": "qualifications/mos-excel-expert.html",
   "MOS Word 365": "qualifications/mos-word365.html",
-  "MOS PowerPoint 365": "qualifications/mos-powerpoint365.html"
+  "MOS PowerPoint 365": "qualifications/mos-powerpoint365.html",
+  "G検定": "qualifications/g-kentei.html",
+  "危険物取扱者 乙種第4類": "qualifications/hazardous-materials-otsu4.html",
+  "第二種電気工事士": "qualifications/electrician2.html",
+  "TOEIC L&R": "qualifications/toeic-lr.html",
+  "実用英語技能検定2級": "qualifications/eiken2.html",
+  "メンタルヘルス・マネジメント検定III種": "qualifications/mental-health3.html",
+  "登録販売者": "qualifications/registered-seller.html",
+  "介護職員初任者研修": "qualifications/care-worker-initial-training.html"
 };

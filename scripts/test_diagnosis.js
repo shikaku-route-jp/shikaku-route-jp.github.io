@@ -88,3 +88,14 @@ test('keyboard navigation still announces the new question without animated scro
  nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click({detail:0});
  assert.equal(nodes.get('qTitle').focused,true);assert.equal(window.lastScroll,undefined);
 });
+
+test('study-time advice preserves all four selected time ranges',()=>{
+ for(let study=0;study<4;study++){
+  const {nodes}=boot();
+  for(let i=0;i<10;i++){
+   nodes.get('answerGrid').children[i===4?study:0].listeners.click();
+   nodes.get('nextBtn').listeners.click();
+  }
+  assert.ok(nodes.get('adviceList').innerHTML.includes(['30分未満','30分〜1時間','1〜2時間','2時間以上'][study]));
+ }
+});

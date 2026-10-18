@@ -42,6 +42,9 @@ def render(path, page, published):
     text = path.read_text(encoding='utf-8'); url = page_url(path)
     # Rebuild one bounded block so a second generation is byte-for-byte identical.
     text = re.sub(r'\s*<!-- shared-site-metadata:start -->.*?<!-- shared-site-metadata:end -->', '', text, flags=re.S)
+    text = re.sub(r'\s*<!-- site-analytics:start -->.*?<!-- site-analytics:end -->', '', text, flags=re.S)
+    if path != ROOT/'index.html':
+        text=text.replace('</head>', '<!-- site-analytics:start --><script src="/assets/analytics-config.js" defer></script><script src="/assets/analytics.js" defer></script><!-- site-analytics:end --></head>')
     text = re.sub(r'\s*<meta\s+(?:name|property)=["\'](?:og:[^"\']+|twitter:[^"\']+)["\'][^>]*>', '', text, flags=re.I)
     text = re.sub(r'\s*<link\s+rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*>', '', text, flags=re.I)
     is_article = path.parent.name == 'articles' and path.name != 'index.html'

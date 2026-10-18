@@ -94,3 +94,20 @@
 
 .result-share{margin-top:28px}.result-share>p{margin:0 0 12px;font-size:14px;font-weight:700}
 @media print{.result-share{display:none!important}}
+
+/* Keep candidate comparisons inside their own scroll area on small screens. */
+.comparison-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.comparison-controls label{min-width:0;font:700 12px/1.6 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.comparison-controls select{display:block;width:100%;min-width:0;min-height:44px;margin-top:6px;padding:10px 8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.comparison-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.candidate-table{width:100%;min-width:660px;border-collapse:collapse;table-layout:fixed;font-size:13px;line-height:1.8}
+.candidate-table caption{text-align:left;font-weight:800;margin-bottom:10px}
+.candidate-table th,.candidate-table td{padding:12px;border:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.candidate-table th{background:#f4eddd;text-align:left}.candidate-table tr>th:first-child{width:125px}.candidate-table small{display:block;margin-top:8px;font-size:11px;color:var(--muted)}
+.practice-callout{padding:30px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:36px}
+.practice-callout>.wrap{display:flex;justify-content:space-between;align-items:center;gap:24px}
+.practice-callout h2{font-size:26px;line-height:1.5;margin:8px 0}.practice-callout p{font-size:13px;color:var(--muted);margin:0}
+.practice-links{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;font-size:13px;max-width:400px}
+.practice-links .btn{width:100%;margin-bottom:4px}.site-ad-slot{min-height:0}
+@media(max-width:680px){.comparison-controls{grid-template-columns:1fr}.practice-callout>.wrap{display:block}.practice-links{margin-top:18px;max-width:none}.candidate-table th,.candidate-table td{padding:10px}.practice-callout h2{font-size:23px}}
+@media print{.comparison-controls,.practice-callout{display:none}.comparison-scroll{overflow:visible}.candidate-table{min-width:0;font-size:10px}.candidate-table th,.candidate-table td{padding:6px}}
