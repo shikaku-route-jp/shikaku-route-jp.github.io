@@ -91,3 +91,6 @@
 
 /* Keep the materials guide and diagnosis reachable on narrow headers. */
 @media(max-width:680px){.topbar-inner{flex-wrap:wrap;padding-block:12px;row-gap:8px}.top-links{gap:12px;margin-left:auto}.top-links a:nth-child(-n+2){display:none}}
+
+.result-share{margin-top:28px}.result-share>p{margin:0 0 12px;font-size:14px;font-weight:700}
+@media print{.result-share{display:none!important}}
