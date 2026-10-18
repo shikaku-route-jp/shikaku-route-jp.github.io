@@ -63,6 +63,13 @@
     renderProduct(main);
     title.textContent = guide.title;
     document.getElementById("learningSummary").textContent = guide.summary;
+    const materialsLink = document.getElementById("materialsGuideLink");
+    if (materialsLink) {
+      materialsLink.href = main.name === "FP3級" ? "materials/#fp3" : "materials/";
+      materialsLink.textContent = main.name === "FP3級"
+        ? "FP3級の教材紹介を詳しく見る →"
+        : "教材案内で掲載中の教材を見る →";
+    }
     document.getElementById("learningTip").textContent = guide.tip;
     document.getElementById("materialKeyword").value = guide.keyword;
     document.getElementById("materialDirectSearch").href = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(guide.keyword)}/`;

@@ -1,0 +1,51 @@
+.materials-main{padding:32px 0 72px}
+.materials-breadcrumb{margin:0 0 32px;color:var(--muted);font:12px/1.7 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.materials-hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(270px,1fr);gap:48px;align-items:center}
+.materials-hero h1{font-size:clamp(38px,5.5vw,64px);line-height:1.35;letter-spacing:-.04em;margin:18px 0}
+.materials-lead{max-width:580px;color:var(--muted);font-size:15px;line-height:1.95}
+.materials-memo{padding:24px;background:var(--paper);border:1px solid var(--ink);box-shadow:6px 6px 0 rgba(167,51,45,.16)}
+.materials-memo h2{margin:10px 0;font-size:22px;line-height:1.5}
+.materials-memo ol{padding-left:1.4em;margin:12px 0;font-size:13px;line-height:2}
+.materials-memo>a{font:700 12px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.materials-jumps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:36px 0 22px;border-top:3px double var(--ink);border-bottom:3px double var(--ink)}
+.materials-jumps>a{position:relative;padding:20px 24px;text-decoration:none}
+.materials-jumps>a+a{border-left:1px solid var(--line)}
+.materials-jumps span{display:block;color:var(--muted);font:12px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.materials-jumps strong{display:block;font-size:25px;line-height:1.7}
+.materials-jumps .materials-jump-action{margin-top:4px;color:var(--red);font-weight:700}
+.materials-jumps>a:hover{background:var(--paper)}
+.materials-disclosure{padding:14px 18px;border-left:3px solid var(--gold);background:#f4eddd;font:12px/1.9 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.materials-disclosure b{margin-right:10px}
+.materials-shelf{display:grid;gap:28px;margin-top:26px}
+.material-book{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:32px;padding:32px;background:var(--paper);border:1px solid var(--ink);scroll-margin-top:20px}
+.book-about,.book-purchase{min-width:0}
+.book-about>.section-kicker{margin:0 0 14px}
+.book-about h2{margin:0 0 18px;font-size:clamp(24px,3vw,32px);line-height:1.55;overflow-wrap:anywhere}
+.book-edition{display:block;color:var(--muted);font:700 14px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;margin-top:5px}
+.book-specs{display:grid;gap:5px;margin:0 0 20px;font:12px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.book-specs>div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px}
+.book-specs dt{color:var(--muted)}.book-specs dd{margin:0;overflow-wrap:anywhere}
+.book-about h3{font-size:15px;margin:20px 0 8px}
+.book-fit{padding:14px 16px;border-left:3px solid var(--red);background:#f4eddd}
+.book-fit h3{margin:0 0 5px}.book-fit p{margin:0;font-size:14px;line-height:1.9}
+.book-features{padding-left:1.3em;margin:8px 0 18px;font-size:14px;line-height:1.9}
+.book-features li+li{margin-top:4px}
+.book-note{font-size:12px;line-height:1.9;color:var(--muted)}.book-note b{color:var(--ink);margin-right:6px}
+.book-source{padding-top:12px;border-top:1px solid var(--line);font:11px/1.9 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;color:var(--muted)}
+.book-guide-links{display:flex;gap:8px 18px;flex-wrap:wrap;font:700 12px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.book-purchase{border-left:1px solid var(--line);padding-left:28px}
+.book-purchase>.affiliate-label{margin:0 0 14px}
+.book-affiliate-card{max-width:100%;overflow-x:auto;overflow-wrap:anywhere}
+.book-store-link{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:20px 16px;border:1px solid var(--line);background:#fffdf7;font-size:14px;line-height:1.8}
+.book-store-link>img{width:160px;height:190px;max-width:100%;object-fit:contain}
+.book-store-action{display:block;margin-top:12px;padding:11px 14px;background:var(--ink);color:var(--paper);font:700 13px/1.7 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.book-purchase-note{font:11px/1.9 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;color:var(--muted)}
+.materials-next{display:flex;gap:24px;align-items:center;justify-content:space-between;padding:26px 0;border-top:3px double var(--ink);border-bottom:3px double var(--ink);margin:36px 0 20px}
+.materials-next h2{margin:8px 0;font-size:27px;line-height:1.5}.materials-next p{margin:0;font-size:13px;color:var(--muted)}
+.materials-next .btn{flex:0 0 auto}
+.materials-editorial{font:12px/1.9 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif;color:var(--muted)}
+.materials-main a:focus-visible{outline:3px solid var(--red);outline-offset:4px}
+@media(max-width:860px){.materials-hero{gap:26px}.material-book{grid-template-columns:minmax(0,1fr) minmax(0,290px);gap:22px;padding:24px}.book-purchase{padding-left:20px}}
+@media(max-width:680px){.materials-main{padding:24px 0 50px}.materials-breadcrumb{margin-bottom:26px}.materials-hero{grid-template-columns:1fr;gap:20px}.materials-hero h1{font-size:39px}.materials-memo{padding:20px}.materials-jumps{margin-top:28px}.materials-jumps>a{padding:16px 12px}.materials-jumps strong{font-size:21px}.materials-disclosure{padding:12px 14px}.material-book{grid-template-columns:1fr;padding:22px 18px;gap:20px}.book-purchase{padding:20px 0 0;border-left:0;border-top:1px solid var(--line)}.book-affiliate-card{max-width:380px;margin-inline:auto}.book-store-link>img{width:160px;height:180px}.materials-next{display:block;padding:22px 0}.materials-next .btn{width:100%;margin-top:20px}}
+@media(max-width:350px){.materials-hero h1{font-size:34px}.materials-jumps strong{font-size:18px}.materials-jumps span{font-size:11px}.material-book{padding-inline:14px}}
+@media print{.materials-jumps,.book-purchase,.materials-next{display:none}.materials-hero,.material-book{display:block}.material-book{break-inside:avoid}.materials-main{padding:0}}
