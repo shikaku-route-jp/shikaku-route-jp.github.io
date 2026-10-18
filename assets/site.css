@@ -57,7 +57,7 @@
   .material-shop{display:block;padding:15px}
   .material-banner{margin-top:14px}
 }
-@media print{.material-search,.material-shop,.learning-guide .disclosure{display:none!important}}
+@media print{.material-search,.material-shop,.fp3-product-offer,.event-product-offer,.learning-guide .disclosure{display:none!important}}
 
 .result-next-step{margin:20px 0 0;font:800 14px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
 .result-next-step a{display:inline-flex;align-items:center;min-height:44px}
