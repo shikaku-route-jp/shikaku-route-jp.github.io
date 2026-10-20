@@ -105,9 +105,10 @@
     ["as-a-result", "phrases", "as a result", "It rained heavily. As a result, the game was canceled. この文の as a result の意味は？", ["その前に", "例えば", "偶然に", "その結果"], 3, "as a resultは「その結果」。例文では、大雨の結果として試合が中止になったと説明しています。", "as a result＝その結果。"]
   ];
   const course = {
-    id: "eiken-pre2", name: "英検準2級の英単語・熟語", version: 1,
+    // Keep this internal ID to preserve existing browser progress after the course rename.
+    id: "eiken-pre2", name: "高校基礎の英単語・熟語", version: 1,
     reviewed: "2026-10-20", syllabus: "日常生活の語彙・熟語の基礎100問",
-    source: "https://www.eiken.or.jp/eiken/exam/grade_p2/solutions.html",
+    source: "https://www.mext.go.jp/a_menu/shotou/new-cs/1407074.htm",
     areas: { verbs: "動詞", descriptions: "形容詞・副詞", phrases: "熟語・表現" },
     questions: rows.map(([id, area, topic, question, choices, answer, explanation, takeaway]) => {
       const parts = question.match(/^(.+?) (この文の.+)$/);
