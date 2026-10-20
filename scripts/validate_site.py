@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit, unquote
+from urllib.parse import urlsplit, unquote, urljoin
 import re
 import sys
 import json
@@ -115,10 +115,36 @@ except ET.ParseError as exc:
     errors.append(f"sitemap XML invalid: {exc}"); listed = []
 urls = [url for url, _ in listed]
 if len(urls) != len(set(urls)): errors.append("duplicate URLs in sitemap")
-expected = {page_url(path) for path, _ in content_pages()}
+inventory = {page_url(path): (path, page) for path, page in content_pages()}
+expected = set(inventory)
 if set(urls) != expected:
     errors.append(f"sitemap inventory mismatch: missing={sorted(expected-set(urls))}, extra={sorted(set(urls)-expected)}")
 days = dict(listed)
+# Search entry pages must have useful, distinct metadata and remain reachable
+# through ordinary HTML links, without requiring diagnosis answers or JS.
+for field in ('title', 'description'):
+    seen = {}
+    for url, (path, page) in inventory.items():
+        value = (page.title if field == 'title' else page.meta.get(field, '')).strip()
+        if not value: errors.append(f'{path.relative_to(ROOT)}: missing {field}')
+        elif value in seen: errors.append(f'{path.relative_to(ROOT)}: duplicate {field} with {seen[value]}')
+        seen[value] = path.relative_to(ROOT)
+for url, (path, page) in inventory.items():
+    if page.h1_count != 1: errors.append(f'{path.relative_to(ROOT)}: expected one main heading, found {page.h1_count}')
+visited = set(); pending = [BASE + '/']
+while pending:
+    url = pending.pop()
+    if url in visited or url not in inventory: continue
+    visited.add(url)
+    for href in inventory[url][1].anchor_links:
+        target = urlsplit(urljoin(url, href))
+        target_url = target.scheme + '://' + target.netloc + target.path
+        if target_url.endswith('/index.html'): target_url = target_url[:-10]
+        if target_url in inventory and target_url not in visited: pending.append(target_url)
+for url in sorted(expected - visited): errors.append(f'page not reachable from homepage through HTML links: {url}')
+static_directory = re.search(r'<div class="qualification-grid" id="qualificationGrid">(.*?)</div><!-- static-directory:end -->', home, re.S)
+if not static_directory or static_directory[1].count('class="qualification-card"') != len(names):
+    errors.append('homepage must include all qualifications in its initial HTML')
 for path, page in content_pages(include_noindex=True):
     rel = path.relative_to(ROOT); url = page_url(path)
     if page.canonicals != [url]: errors.append(f"{rel}: canonical must be exactly its own URL ({url})")

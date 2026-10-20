@@ -56,6 +56,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
       - name: Regenerate and validate metadata at current main
         run: |
           python scripts/generate_metadata.py --write

@@ -5,13 +5,12 @@
   // 日付・申込期間・公式URLは必ず公式情報を確認して更新してください。
   window.EXAM_SCHEDULES = {
     "宅地建物取引士": {
-      type: "fixed",
-      next: "2026-10-18",
-      label: "2026年10月18日（日）",
-      application: "2026年度の申込受付は終了",
-      note: "13:00〜15:00。登録講習修了者は13:10〜15:00。",
+      type: "pending",
+      label: "次回の試験日程は公式サイトで確認",
+      application: "次回の申込期間は公式サイトで確認",
+      note: "2026年度試験（10月18日）は終了。次年度の実施公告を確認してください。",
       url: "https://www.retio.or.jp/exam/schedule/",
-      verified: "2026-10-05"
+      verified: "2026-10-20"
     },
     "行政書士": {
       type: "fixed",
