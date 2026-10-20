@@ -62,6 +62,14 @@
     const guide = build(main, goal);
     renderProduct(main);
     title.textContent = guide.title;
+    const practice = document.getElementById("studyPracticeOffer");
+    const course = (window.QualificationStudyCatalog || []).find(item => item.qualification === main.name);
+    if (practice) {
+      practice.hidden = !course;
+      const link = document.getElementById("studyPracticeLink");
+      link.href = course ? course.href : "study/";
+      link.textContent = course ? `${course.name}の基礎を無料で5問練習する →` : "無料の資格学習を見る →";
+    }
     document.getElementById("learningSummary").textContent = guide.summary;
     const materialsLink = document.getElementById("materialsGuideLink");
     if (materialsLink) {

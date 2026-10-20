@@ -48,6 +48,7 @@ function environment(writeText = async () => {}) {
   const window = { print() {}, open() {} };
   const context = vm.createContext({ window, document, navigator: { clipboard: { writeText } },
     location: { href: "https://shikaku-route-jp.github.io/" }, setTimeout() {} });
+  vm.runInContext(fs.readFileSync(path.join(root, "assets/study-catalog.js"), "utf8"), context);
   vm.runInContext(guideSource, context);
   return { context, window, elements, api: window.QualificationLearningGuide };
 }
@@ -62,6 +63,15 @@ test("all 100 result qualifications receive guidance without changing their name
     assert.ok(elements.get("learningTip").textContent.length > 15);
     assert.equal(elements.get("businessSupport").hidden, true);
   }
+});
+
+test("free practice appears only for a published matching course and clears on another result", () => {
+  const { api, elements } = environment();
+  api.render({ name: "ITパスポート", category: "it", level: 1 }, "job");
+  assert.equal(elements.get("studyPracticeOffer").hidden, false);
+  assert.equal(elements.get("studyPracticeLink").href, "study/itpassport.html");
+  api.render({ name: "FP3級", category: "finance", level: 1 }, "job");
+  assert.equal(elements.get("studyPracticeOffer").hidden, true);
 });
 
 test("accounting consultation is limited to relevant goals and categories, including repeat diagnoses", () => {
