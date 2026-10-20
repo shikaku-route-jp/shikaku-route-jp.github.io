@@ -16,6 +16,7 @@ from site_common import ROOT, BASE, Page, content_pages, page_url
 JST = timezone(timedelta(hours=9))
 IMAGE = BASE + '/assets/ogp.png'
 BOT_MESSAGE = '^chore: sync site metadata'
+UPDATED_DATE = r'(更新(?:日)?[：:]|最終更新[：:])\s*\d{4}年\d{1,2}月\d{1,2}日'
 
 def git_day(path, first=False):
     command = ['git', 'log', '--format=%cI', '--invert-grep', '--grep='+BOT_MESSAGE]
@@ -29,9 +30,29 @@ def git_day(path, first=False):
         raise RuntimeError(f'No Git history for {path.name}')
     return datetime.fromisoformat(lines[0]).astimezone(JST).date().isoformat()
 
+def page_content(text):
+    """Compare the main content, excluding generated dates and invisible code."""
+    main = re.search(r'<main\b[^>]*>(.*?)</main>', text, flags=re.S | re.I)
+    text = main[1] if main else re.sub(r'<head\b[^>]*>.*?</head>', '', text, flags=re.S | re.I)
+    text = re.sub(r'<!--.*?-->|<(script|style)\b[^>]*>.*?</\1>', '', text, flags=re.S | re.I)
+    text = re.sub(UPDATED_DATE, r'\1', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return re.sub(r'>\s+<', '><', text)
+
 def modified_day(path):
-    dirty = subprocess.run(['git', 'status', '--porcelain', '--', str(path.relative_to(ROOT))], cwd=ROOT, capture_output=True, text=True, check=True).stdout
-    return datetime.now(JST).date().isoformat() if dirty.strip() else git_day(path)
+    relative = path.relative_to(ROOT).as_posix()
+    content = page_content(path.read_text(encoding='utf-8'))
+    history = subprocess.run(['git', 'log', '--format=%H%x09%cI', '--', relative], cwd=ROOT, capture_output=True, text=True, check=True)
+    day = datetime.now(JST).date().isoformat()
+    # Walk past metadata-only commits regardless of their commit message.
+    # An uncommitted content change (or a new page) keeps today's date.
+    for line in history.stdout.splitlines():
+        commit, stamp = line.split('\t', 1)
+        previous = subprocess.run(['git', 'show', f'{commit}:{relative}'], cwd=ROOT, capture_output=True, text=True)
+        if previous.returncode or page_content(previous.stdout) != content:
+            break
+        day = datetime.fromisoformat(stamp).astimezone(JST).date().isoformat()
+    return day
 
 def replace_meta(text, key, value, prop=False):
     text = re.sub(r'\s*<meta\s+(?:name|property)=["\']'+re.escape(key)+r'["\'][^>]*>', '', text, flags=re.I)
@@ -49,7 +70,7 @@ def render(path, page, published):
     text = re.sub(r'\s*<link\s+rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*>', '', text, flags=re.I)
     is_article = path.parent.name == 'articles' and path.name != 'index.html'
     day = modified_day(path)
-    text = re.sub(r'(更新(?:日)?[：:]|最終更新[：:])\s*\d{4}年\d{1,2}月\d{1,2}日', lambda m:m[1]+f'{int(day[:4])}年{int(day[5:7])}月{int(day[8:])}日', text)
+    text = re.sub(UPDATED_DATE, lambda m:m[1]+f'{int(day[:4])}年{int(day[5:7])}月{int(day[8:])}日', text)
     def schema(match):
         data = json.loads(match[1])
         if is_article and data.get('@type') == 'BreadcrumbList': return ''

@@ -14,11 +14,12 @@ python scripts/generate_qualification_pages.py
 python scripts/generate_metadata.py --write
 python scripts/validate_site.py
 python scripts/check_exam_dates.py
+python -m unittest discover -s scripts -p 'test_metadata.py'
 node --test scripts/test_diagnosis.js scripts/test_yoji.js scripts/test_learning_guide.js
 node --test scripts/test_comparison_analytics.js
 ```
 
-Gitの履歴を省略せず取得してください。GitHub Actionsは全履歴を取得し、変更時と週1回、上記の検証とメタ情報の同期を行います。メタ情報のみの自動コミットは更新日の計算対象から除外し、生成処理が自身の日付を更新し続けることを防ぎます。自動更新のコミット後はPagesの再ビルドを要求します。ブランチ保護等で自動コミットが認められない場合は、Actionsのエラーを確認し、生成した差分を通常のレビュー経由で反映してください。
+Gitの履歴を省略せず取得してください。GitHub Actionsは全履歴を取得し、変更時と週1回、上記の検証とメタ情報の同期を行います。更新日は各ページのmain内の内容が変わった日を使います。OGP・解析タグ・共通ヘッダーやフッター・生成した更新日・空白整形だけの変更は、コミット名にかかわらず更新日の計算対象から除外します。本文が未コミットの場合は日本時間の当日を使います。公式情報の確認日は、この編集日とは別に管理します。自動更新のコミット後はPagesの再ビルドを要求します。ブランチ保護等で自動コミットが認められない場合は、Actionsのエラーを確認し、生成した差分を通常のレビュー経由で反映してください。
 
 - 診断と100資格のデータ: `assets/app.js`
 - 教材案内: `materials/index.html` と `assets/materials.css`。購入リンクは提供された広告コードを使用し、商品説明の確認先と確認日を併記します。

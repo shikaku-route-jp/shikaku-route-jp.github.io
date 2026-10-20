@@ -36,6 +36,8 @@ jobs:
         run: python scripts/validate_site.py
       - name: Check generated metadata is stable
         run: python scripts/generate_metadata.py
+      - name: Check content dates ignore metadata-only changes
+        run: python -m unittest discover -s scripts -p 'test_metadata.py'
       - name: Check exam schedule freshness
         run: python scripts/check_exam_dates.py
       - name: Check diagnosis, mobile interactions and idiom practice
