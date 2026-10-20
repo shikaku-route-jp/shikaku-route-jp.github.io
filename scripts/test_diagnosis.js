@@ -17,6 +17,24 @@ function boot(reduced=false){
  return {window,nodes,shell,api:window.QualificationDiagnosis};
 }
 const answers={interests:['finance'],goal:['job'],strength:['numbers'],work:['desk'],study:[2],period:[8],difficulty:[2],language:[0],digital:[1],priority:['interest']};
+test('initial HTML includes all qualifications and guide links before JavaScript runs',()=>{
+ const {api}=boot();
+ const initial=html.match(/<div class="qualification-grid" id="qualificationGrid">([\s\S]*?)<\/div><!-- static-directory:end -->/)[1];
+ assert.equal((initial.match(/class="qualification-card"/g)||[]).length,100);
+ assert.equal((initial.match(/class="qualification-detail"/g)||[]).length,22);
+ assert.equal(initial,api.directoryMarkup(api.qualifications));
+ assert.doesNotMatch(api.directoryMarkup([{...api.qualifications[0],name:'<img src=x onerror=alert(1)>'}]),/<img/);
+});
+test('static directory still enhances into a limited, expandable and searchable list',()=>{
+ const {nodes}=boot();
+ const count=()=> (nodes.get('qualificationGrid').innerHTML.match(/class="qualification-card"/g)||[]).length;
+ assert.equal(count(),16);assert.equal(nodes.get('directoryMore').hidden,false);
+ nodes.get('directoryMore').listeners.click();assert.equal(count(),100);
+ nodes.get('directoryMore').listeners.click();assert.equal(count(),16);
+ nodes.get('qualificationSearch').listeners.input({target:{value:'FP'}});assert.equal(count(),3);
+ nodes.get('qualificationSearch').listeners.input({target:{value:'存在しない資格名'}});assert.equal(count(),0);
+ assert.match(nodes.get('qualificationGrid').innerHTML,/その条件では見つかりませんでした/);
+});
 test('all 100 qualifications have explicit national flags; chamber exams and training are separate',()=>{
  const {api}=boot();assert.equal(api.qualifications.length,100);assert.ok(api.qualifications.every(q=>typeof q.national==='boolean'));
  for(const name of ['日商簿記1級','日商簿記2級','日商簿記3級','日商PC検定1級','介護職員初任者研修','介護福祉士実務者研修','ケアマネジャー','登録販売者'])assert.equal(api.qualifications.find(q=>q.name===name).national,false,name);

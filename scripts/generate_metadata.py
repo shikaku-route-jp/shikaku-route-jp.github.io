@@ -83,6 +83,17 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--write',action='store_true');args=parser.parse_args()
     seed=ROOT/'data/article-published.json';published=json.loads(seed.read_text()) if seed.exists() else {}
     changed=[]; entries=[]
+    # Share the browser's card renderer so the initial HTML stays in sync with
+    # all 100 qualifications, including when JavaScript is unavailable.
+    exported=json.loads(subprocess.check_output(['node',str(ROOT/'scripts/export_qualifications.js')],text=True))
+    home=ROOT/'index.html'; original=home.read_text(encoding='utf-8')
+    pattern=r'(<div class="qualification-grid" id="qualificationGrid">).*?(</div><!-- static-directory:end -->)'
+    if not re.search(pattern, original, flags=re.S):
+        raise RuntimeError('Static directory markers missing from index.html')
+    static_home=re.sub(pattern,lambda m:m[1]+exported['directoryHTML']+m[2],original,count=1,flags=re.S)
+    if static_home!=original:
+        changed.append('index.html (static directory)')
+        if args.write:home.write_text(static_home,encoding='utf-8')
     for path,page in content_pages(include_noindex=True):
         text,day=render(path,page,published)
         if text!=path.read_text():

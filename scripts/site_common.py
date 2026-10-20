@@ -12,9 +12,12 @@ class Page(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.meta = {}; self.canonicals = []; self.links = []; self.jsonld = []
         self.icons = []; self.title = ''; self._title = False; self._json = None
+        self.anchor_links = []; self.h1_count = 0
         self.feed(text)
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
+        if tag == 'a' and a.get('href'): self.anchor_links.append(a['href'])
+        if tag == 'h1': self.h1_count += 1
         if tag == 'meta': self.meta[a.get('property', a.get('name', '')).lower()] = a.get('content', '')
         if tag == 'link':
             if a.get('rel') == 'canonical': self.canonicals.append(a.get('href', ''))

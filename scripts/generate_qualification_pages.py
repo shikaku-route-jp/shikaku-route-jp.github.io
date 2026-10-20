@@ -12,6 +12,7 @@ def section(title,body):return '<section><h2>'+e(title)+'</h2>'+body+'</section>
 def main():
  data=json.loads(subprocess.check_output(['node',str(ROOT/'scripts/export_qualifications.js')],text=True))
  guides=json.loads((ROOT/'data/qualification-guides.json').read_text());quals={q['name']:q for q in data['qualifications']}; schedules=data['schedules']
+ article_titles={g['article']:re.sub(r'<[^>]+>','',re.search(r'<h1[^>]*>(.*?)</h1>',(ROOT/'articles'/g['article']).read_text(),re.S)[1]) for g in guides.values()}
  pages={name:'qualifications/'+g['slug']+'.html' for name,g in guides.items()}
  directory=ROOT/'qualifications';directory.mkdir(exist_ok=True)
  (ROOT/'assets/qualification-pages.js').write_text('window.QUALIFICATION_PAGES = '+json.dumps(pages,ensure_ascii=False,indent=2)+';\n')
@@ -47,7 +48,7 @@ def main():
     route.append((title2,label))
   if route:content+=section('ほかの資格とどう比べるか',table(route)+'<p>上の資格は学習内容や目的を比べるための候補です。この順番で必ず取得する必要があるという意味ではありません。法令上の受験資格とは分け、目標の試験を直接受けられるかは公式要綱で確認してください。</p>')
   materials='<p><a class="button-link" href="../materials/#fp3">FP3級の教材案内を見る →</a></p>' if name=='FP3級' else '<p><a href="../articles/before-buying-materials.html">教材選びの確認点を読む →</a> ／ <a href="../materials/">教材案内（掲載中：FP3級・イベント検定） →</a></p>'
-  content+=section('関連する記事と次の行動',f'<p><a href="../articles/{g["article"]}">仕事内容や学び方を記事でも確認する →</a></p>'+materials+'<p>今の条件で候補を比べ直したい場合は、無料診断で興味・目的・学習時間を整理できます。結果に出た資格が複数あるときは、名前の印象だけで決めず、公式の問題例と仕事で使う場面を並べて比較しましょう。</p><div class="return-row"><a class="button-link" href="../#diagnosis">10問の資格診断をする →</a><a class="button-link secondary" href="./">資格ガイド一覧</a></div>')
+  content+=section('関連する記事と次の行動',f'<p><a href="../articles/{g["article"]}">{e(article_titles[g["article"]])} →</a></p>'+materials+'<p>今の条件で候補を比べ直したい場合は、無料診断で興味・目的・学習時間を整理できます。結果に出た資格が複数あるときは、名前の印象だけで決めず、公式の問題例と仕事で使う場面を並べて比較しましょう。</p><div class="return-row"><a class="button-link" href="../#diagnosis">10問の資格診断をする →</a><a class="button-link secondary" href="./">資格ガイド一覧</a></div>')
   content+='</div></article>'
   (directory/(g['slug']+'.html')).write_text(document(title,f'{name}の公式日程・受験時の注意点・学習の進め方と、診断上の目安を整理します。',g['slug']+'.html',content,[('診断トップ',BASE+'/'),('資格ガイド',BASE+'/qualifications/'),(name,url)]))
  cards=''.join(f'<a class="article-card" href="{g["slug"]}.html"><span class="category">{e(labels[quals[n]["category"]])}</span><h2>{e(n)}</h2><p>{e(g["fit"][:90])}…</p><span class="more">受験・学習ガイド →</span></a>' for n,g in guides.items())

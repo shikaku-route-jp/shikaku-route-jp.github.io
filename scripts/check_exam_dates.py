@@ -34,6 +34,10 @@ for match in blocks:
 
     type_m = re.search(r'type:\s*"([^"]+)"', body)
     next_m = re.search(r'next:\s*"(\d{4}-\d{2}-\d{2})"', body)
+    if not type_m or type_m.group(1) not in ('fixed', 'cbt', 'pending'):
+        errors.append(f"{name}: unknown or missing schedule type")
+    if type_m and type_m.group(1) == 'pending' and next_m:
+        errors.append(f"{name}: pending schedule must not claim a next exam date")
     if type_m and type_m.group(1) == "fixed":
         if not next_m:
             errors.append(f"{name}: fixed exam is missing next date")

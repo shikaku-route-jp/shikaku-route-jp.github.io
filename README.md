@@ -10,7 +10,7 @@
 # 資格ガイドの編集データを変えた場合のみ、先に実行する
 python scripts/generate_qualification_pages.py
 
-# 共有カード、記事の日付・構造化データ、サイトマップを同期
+# トップの100資格一覧、共有カード、記事の日付・構造化データ、サイトマップを同期（Node.jsが必要）
 python scripts/generate_metadata.py --write
 python scripts/validate_site.py
 python scripts/check_exam_dates.py
@@ -30,6 +30,7 @@ Gitの履歴を省略せず取得してください。GitHub Actionsは全履歴
 - OGP: `assets/ogp.png`（1200×630）。faviconはSVG・ICO、タッチアイコンはPNG。
 
 試験日検査は、過去日と確認日の古さを検出する検査です。公式サイトの変更そのものを自動取得・確認するものではありません。公式データを未確認のまま確認日だけ進めないでください。
+次回日程を掲載できない資格は `type: "pending"` とし、`next` を設定せず公式案内へ誘導します。終了した試験の日付を次回日程として残したり、翌年の日付を推測したりしないでください。
 
 ## 運営情報と外部設定
 
@@ -46,3 +47,9 @@ AdSenseは既存の確認タグを維持し、広告表記・Cookie説明・ads.
 接続後はGA4のリアルタイムまたはDebugViewで `diagnosis_start`、`diagnosis_step`（1〜10）、`diagnosis_complete`、`materials_open`、`affiliate_click` を確認します。質問への回答と資格名は送信しません。タグ未設定時もブラウザ内の `dataLayer` でイベントを確認できますが、他の訪問者の記録は集まりません。
 
 AdMaxの配信タグは `document.write` を使用します。診断用スクリプトを先に実行し、既存タグをページ末尾でパーサー読み込みした後、`assets/ad-placement.js` が元の広告位置へ枠を移動します。広告タグをasync化したり、iframeでラップしたりしないでください。広告通信が遅い間も質問を操作できますが、実際の配信成立は実機で確認してください。
+
+## 検索向けのHTMLと記事の更新
+
+トップの資格一覧は、`assets/app.js` のカード描画を共有して `generate_metadata.py` が静的HTMLへ出力します。JavaScriptを使えない環境でも100資格と個別ガイドへのリンクを読め、JavaScript有効時は従来どおり16件表示・検索・分野別絞り込みへ切り替わります。資格データを変更した際も、公開前に上記の生成・検証を実行してください。
+
+資格ガイドからの記事リンクは、生成時にリンク先の見出しを読み取ります。記事のタイトルを変更した場合は、資格ガイドを再生成してからメタ情報を同期します。学習期間は当サイトの比較用目安、料金・制度は公式情報として区別し、公式の確認日を編集日だけで書き換えないでください。
