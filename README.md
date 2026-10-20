@@ -1,4 +1,4 @@
-# 資格ルート案内室
+# 資格診断サイト
 
 公開サイト: https://shikaku-route-jp.github.io/
 
@@ -29,7 +29,7 @@ Gitの履歴を省略せず取得してください。GitHub Actionsは全履歴
 - 試験日: `assets/exam-dates.js`。更新時は公式情報のURLと実際の確認日を記録します。
 - 個別ガイドの編集内容: `data/qualification-guides.json`
 - 記事公開日: `data/article-published.json`（GitHub上の初出履歴を確認した日付を保持）
-- OGP: `assets/ogp.png`（1200×630）。faviconはSVG・ICO、タッチアイコンはPNG。
+- OGP: `assets/ogp-site-name.png`（1200×630）。faviconはSVG・ICO、タッチアイコンはPNG。
 
 試験日検査は、過去日と確認日の古さを検出する検査です。公式サイトの変更そのものを自動取得・確認するものではありません。公式データを未確認のまま確認日だけ進めないでください。
 次回日程を掲載できない資格は `type: "pending"` とし、`next` を設定せず公式案内へ誘導します。終了した試験の日付を次回日程として残したり、翌年の日付を推測したりしないでください。

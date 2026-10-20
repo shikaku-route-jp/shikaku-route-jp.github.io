@@ -156,7 +156,7 @@ function renderExamInfo(item){
  const expired=info.type==="fixed"&&info.next<new Date().toLocaleDateString("sv-SE",{timeZone:"Asia/Tokyo"});
  return `<div class="exam-date-main">${expired?"公表済みの日程（終了）：":""}${escapeHtml(info.label)}</div><div class="exam-row"><span>申込</span><b>${escapeHtml(expired?"次回日程は公式サイトで確認してください":info.application||"公式サイトで確認")}</b></div>${info.note?`<p class="exam-note">${escapeHtml(info.note)}</p>`:""}<a class="exam-official" href="${escapeHtml(info.url)}" target="_blank" rel="noopener noreferrer">公式日程を確認 →</a><small class="exam-verified">公式情報確認：${escapeHtml(info.verified.replaceAll("-","/"))}</small>`;
 }
-function resultText(result){const names=result.topTies.map(x=>x.name).join(" ／ ");return `資格ルート診断の候補：${names}${result.topTies.length>1?"（同率1位）":""}`}
+function resultText(result){const names=result.topTies.map(x=>x.name).join(" ／ ");return `資格診断サイトの候補：${names}${result.topTies.length>1?"（同率1位）":""}`}
 function showResult(){
  const ranked=getRankings();const main=ranked[0];const topTies=ranked.filter(x=>x.score===main.score);const route=routeFor(main);const matches=matchedConditions(main);
  $("typeName").textContent=typeFor(main);$("mainQualification").textContent=topTies.map(x=>x.name).join(" ／ ");
