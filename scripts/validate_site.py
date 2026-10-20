@@ -7,9 +7,9 @@ import sys
 import json
 import struct
 import xml.etree.ElementTree as ET
-from datetime import date
+from datetime import date, datetime
 from site_common import BASE, Page, content_pages, page_url
-from generate_metadata import modified_day
+from generate_metadata import JST, modified_day
 
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
@@ -29,12 +29,11 @@ def local_target(source: Path, raw: str):
     raw = raw.strip()
     if not raw or raw.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
         return None
-    parts = urlsplit(raw)
-    if parts.scheme or parts.netloc:
+    parts = urlsplit(urljoin(page_url(source), raw))
+    origin = urlsplit(BASE)
+    if (parts.scheme, parts.netloc) != (origin.scheme, origin.netloc):
         return None
-    path = unquote(parts.path)
-    if not path:
-        return None
+    path = unquote(parts.path) or "/"
     if path.startswith("/"):
         target = ROOT / path.lstrip("/")
     else:
@@ -95,7 +94,7 @@ if sorted(card_files) != article_files:
 
 sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
 for file in article_files:
-    url = f"https://shikaku-route-jp.github.io/articles/{file}"
+    url = page_url(ROOT / "articles" / file)
     if url not in sitemap:
         errors.append(f"article missing from sitemap: {file}")
 
@@ -157,7 +156,7 @@ for path, page in content_pages(include_noindex=True):
     if url in days:
         try:
             parsed = date.fromisoformat(days[url])
-            if parsed > date.today(): errors.append(f"{rel}: lastmod is in the future")
+            if parsed > datetime.now(JST).date(): errors.append(f"{rel}: lastmod is in the future")
             if days[url] != modified_day(path): errors.append(f"{rel}: sitemap lastmod is stale relative to Git")
         except (ValueError,TypeError): errors.append(f"{rel}: invalid sitemap lastmod")
     article = path.parent.name == "articles" and path.name != "index.html"
