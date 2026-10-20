@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from site_common import ROOT, BASE, Page, content_pages, page_url
 
 JST = timezone(timedelta(hours=9))
-IMAGE = BASE + '/assets/ogp.png'
+IMAGE = BASE + '/assets/ogp-site-name.png'
 BOT_MESSAGE = '^chore: sync site metadata'
 UPDATED_DATE = r'(更新(?:日)?[：:]|最終更新[：:])\s*\d{4}年\d{1,2}月\d{1,2}日'
 
@@ -87,7 +87,7 @@ def render(path, page, published):
         text = text.replace('<div class="article-meta">','<p class="article-byline">執筆・編集：<a href="../about.html#operator">shikaku-route-jp</a></p><div class="article-meta">')
     # Prefer the visible title/description over prior generated metadata.
     current=Page(text)
-    metas = {'og:type':'article' if is_article else 'website', 'og:locale':'ja_JP', 'og:site_name':'資格ルート案内室', 'og:title':current.title, 'og:description':current.meta.get('description','資格選びと学習の参考情報。'), 'og:url':url, 'og:image':IMAGE, 'og:image:width':'1200', 'og:image:height':'630', 'og:image:type':'image/png', 'og:image:alt':'資格ルート診断 — 100資格から10問で候補を整理', 'twitter:card':'summary_large_image', 'twitter:image':IMAGE, 'twitter:image:alt':'資格ルート診断 — 100資格から10問で候補を整理'}
+    metas = {'og:type':'article' if is_article else 'website', 'og:locale':'ja_JP', 'og:site_name':'資格診断サイト', 'og:title':current.title, 'og:description':current.meta.get('description','資格選びと学習の参考情報。'), 'og:url':url, 'og:image':IMAGE, 'og:image:width':'1200', 'og:image:height':'630', 'og:image:type':'image/png', 'og:image:alt':'資格診断サイト — 100資格から10問で候補を整理', 'twitter:card':'summary_large_image', 'twitter:image':IMAGE, 'twitter:image:alt':'資格診断サイト — 100資格から10問で候補を整理'}
     lines=['<!-- shared-site-metadata:start -->','<link rel="icon" href="/favicon.ico" sizes="any">','<link rel="icon" href="/favicon.svg" type="image/svg+xml">','<link rel="apple-touch-icon" href="/apple-touch-icon.png">']
     for key,value in metas.items():
         attr='property' if key.startswith('og:') else 'name'

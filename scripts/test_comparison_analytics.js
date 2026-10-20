@@ -46,7 +46,7 @@ test("comparison escapes labels and points only to existing guide files", () => 
 function analyticsEnvironment(id = "", preferences = {}) {
   const scripts = [], listeners = {};
   const window = {SITE_ANALYTICS_CONFIG: {measurementId: id}};
-  const ctx = vm.createContext({window, navigator: preferences, location: {origin: "https://shikaku-route-jp.github.io", pathname: "/", href: "https://shikaku-route-jp.github.io/?private=secret"}, URL, document: {title: "資格ルート", head: {appendChild: value => scripts.push(value)}, createElement: () => ({}), addEventListener: (name, fn) => listeners[name] = fn}});
+  const ctx = vm.createContext({window, navigator: preferences, location: {origin: "https://shikaku-route-jp.github.io", pathname: "/", href: "https://shikaku-route-jp.github.io/?private=secret"}, URL, document: {title: "資格診断サイト", head: {appendChild: value => scripts.push(value)}, createElement: () => ({}), addEventListener: (name, fn) => listeners[name] = fn}});
   vm.runInContext(read("assets/analytics.js"), ctx);
   return {window, scripts, listeners, api: window.SiteAnalytics};
 }
