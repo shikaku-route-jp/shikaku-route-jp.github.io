@@ -49,6 +49,7 @@ function environment(writeText = async () => {}) {
   const context = vm.createContext({ window, document, navigator: { clipboard: { writeText } },
     location: { href: "https://shikaku-route-jp.github.io/" }, setTimeout() {} });
   vm.runInContext(fs.readFileSync(path.join(root, "assets/study-catalog.js"), "utf8"), context);
+  vm.runInContext(fs.readFileSync(path.join(root, "assets/qualification-sources.js"), "utf8"), context);
   vm.runInContext(guideSource, context);
   return { context, window, elements, api: window.QualificationLearningGuide };
 }
@@ -148,8 +149,7 @@ test("advertiser destination and affiliate identity are preserved with accurate 
   assert.match(html, /freee会計の導入相談（株式会社Wiz）/);
   assert.doesNotMatch(html, /講座と料金を見る/);
   assert.match(html, /https:\/\/px\.a8\.net\/svt\/ejp\?a8mat=4B66KJ\+7QMVW2\+3SPO\+9FFFOX/);
-  assert.match(html, /a_id=5837301&p_id=54&pc_id=54&pl_id=616/);
-  assert.match(html, /src="\/\/image\.moshimo\.com\/af-img\/0032\/000000000616\.gif" width="88" height="31"/);
+  assert.match(html, /"a_id":5837301,"p_id":54,"pl_id":27059,"pc_id":54/);
   assert.match(html, /href="#rakuten-books"/);
 });
 
@@ -167,15 +167,36 @@ test("FP3 product card loads once, only for the matching result", () => {
   api.render(other, "job");
   assert.equal(mounts, 0);
   assert.equal(elements.get("fp3ProductOffer").hidden, true);
-  assert.equal(elements.get("materialFallback").hidden, false);
   api.render(fp, "daily");
   assert.equal(mounts, 1);
   assert.equal(elements.get("fp3ProductOffer").hidden, false);
-  assert.equal(elements.get("materialFallback").hidden, true);
   api.render(other, "job");
   assert.equal(elements.get("fp3ProductOffer").hidden, true);
-  assert.equal(elements.get("materialFallback").hidden, false);
   api.render(fp, "job");
   assert.equal(mounts, 1);
   assert.equal(elements.get("fp3ProductCard").children.length, 1);
+});
+
+
+test("all diagnosis results show only an exact product match and their own official source", () => {
+  const { api, elements, window } = environment();
+  for (const main of qualifications) {
+    api.render(main, "job");
+    const hasProduct = main.name === "FP3級";
+    assert.equal(elements.get("fp3ProductOffer").hidden, !hasProduct, main.name);
+    assert.equal(elements.get("materialsGuideOffer").hidden, !hasProduct, main.name);
+    assert.equal(elements.get("materialDisclosure").hidden, !hasProduct, main.name);
+    assert.equal(elements.get("learningMaterialStatus").hidden, hasProduct, main.name);
+    assert.equal(elements.get("learningOfficialOffer").hidden, false, main.name);
+    assert.equal(elements.get("learningOfficialLink").href, window.QUALIFICATION_SOURCES[main.name].url);
+    if (hasProduct) {
+      assert.equal(elements.get("materialsGuideLink").href, "materials/#fp3");
+      assert.equal(elements.get("learningMaterialStatus").textContent, "");
+    } else {
+      assert.ok(elements.get("learningMaterialStatus").textContent.includes(main.name));
+    }
+  }
+  // Event materials stay available on their own shelf, outside unrelated diagnosis results.
+  assert.doesNotMatch(html, /event-product-offer|楽天市場トップへ/);
+  assert.match(fs.readFileSync(path.join(root, "materials/index.html"), "utf8"), /id="event"/);
 });

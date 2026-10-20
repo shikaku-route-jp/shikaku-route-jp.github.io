@@ -1,6 +1,9 @@
 (() => {
   "use strict";
 
+  // Only publish a product guide when its exact qualification and supplied ad code match.
+  const PRODUCT_GUIDES = { "FP3級": "materials/#fp3" };
+
   const ARTICLES = {
     "日商簿記3級": ["bookkeeping3-self-study-months.html", "簿記3級の独学の進め方を読む"],
     "宅地建物取引士": ["takken-suitable.html", "宅建の仕事内容と向いている人を読む"],
@@ -36,10 +39,9 @@
   let fp3CardMounted = false;
   function renderProduct(main) {
     const offer = document.getElementById("fp3ProductOffer");
-    const fallback = document.getElementById("materialFallback");
     const isFp3 = main.name === "FP3級";
     offer.hidden = !isFp3;
-    fallback.hidden = isFp3;
+    document.getElementById("materialDisclosure").hidden = !isFp3;
     if (!isFp3 || fp3CardMounted) return;
     const template = document.getElementById("fp3AffiliateTemplate");
     if (!template?.content) return;
@@ -71,13 +73,19 @@
       link.textContent = course ? `${course.name}の基礎を無料で5問練習する →` : "無料の資格学習を見る →";
     }
     document.getElementById("learningSummary").textContent = guide.summary;
+    const materialHref = PRODUCT_GUIDES[main.name];
+    document.getElementById("materialsGuideOffer").hidden = !materialHref;
     const materialsLink = document.getElementById("materialsGuideLink");
-    if (materialsLink) {
-      materialsLink.href = main.name === "FP3級" ? "materials/#fp3" : "materials/";
-      materialsLink.textContent = main.name === "FP3級"
-        ? "FP3級の教材紹介を詳しく見る →"
-        : "教材案内で掲載中の教材を見る →";
-    }
+    materialsLink.href = materialHref || "materials/";
+    materialsLink.textContent = `${main.name}の教材紹介を詳しく見る →`;
+    const status = document.getElementById("learningMaterialStatus");
+    status.hidden = Boolean(materialHref);
+    status.textContent = materialHref ? "" : `${main.name}の個別教材紹介は現在掲載していません。公式の出題範囲や問題例を確認してから、教材を選びましょう。`;
+    const officialUrl = window.QUALIFICATION_SOURCES?.[main.name]?.url;
+    document.getElementById("learningOfficialOffer").hidden = !officialUrl;
+    const officialLink = document.getElementById("learningOfficialLink");
+    officialLink.href = officialUrl || "#";
+    officialLink.textContent = `${main.name}の公式情報・出題範囲を確認する →`;
     document.getElementById("learningTip").textContent = guide.tip;
     document.getElementById("materialKeyword").value = guide.keyword;
     document.getElementById("materialDirectSearch").href = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(guide.keyword)}/`;

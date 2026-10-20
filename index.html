@@ -47,7 +47,9 @@
   <h3 id="learningTitle">自分に合う学び方を選ぶ</h3>
   <p class="panel-intro" id="learningSummary">出題範囲と問題例を確認してから、学び方と必要な教材を比べましょう。</p>
   <p id="studyPracticeOffer" class="learning-articles" hidden><a id="studyPracticeLink" href="study/">無料の資格学習を見る →</a></p>
-  <p class="learning-articles"><a id="materialsGuideLink" href="materials/">教材案内で掲載中の教材を見る →</a></p>
+  <p id="materialsGuideOffer" class="learning-articles" hidden><a id="materialsGuideLink" href="materials/">この資格の教材紹介を見る →</a></p>
+  <p id="learningMaterialStatus" class="panel-intro" hidden></p>
+  <p id="learningOfficialOffer" class="learning-articles" hidden><a id="learningOfficialLink" href="#" target="_blank" rel="noopener noreferrer">公式の試験・出題範囲を確認する →</a></p>
   <div class="learning-options">
     <div class="learning-option"><h4>参考書と問題集で独学</h4><p>自分で予定を立てて進めたい人に。まず試し読みで、解説を理解できるか確かめましょう。</p><dl><dt>費用の見方</dt><dd>受験料＋必要な教材代。送料を含む総額で比べる。</dd><dt>確認すること</dt><dd>試験名・級・対象年度、問題の解説、模擬問題の有無。</dd></dl></div>
     <div class="learning-option"><h4>動画・通信講座で学ぶ</h4><p>学習計画や解説の助けがほしい人に。体験授業で、自分に合う説明か確かめましょう。</p><dl><dt>費用の見方</dt><dd>受講料＋追加教材・延長などの費用＋受験料。</dd><dt>確認すること</dt><dd>対象資格・試験回、視聴期限、質問対応、解約・返金条件。</dd></dl></div>
@@ -79,19 +81,7 @@ msmaflink({"n":"7日でうかる！　FP3級 合格テキスト＆問題集　20
     <p id="materialCopyStatus" class="material-copy-status" role="status" aria-live="polite"></p>
   </div>
   <p><a id="materialDirectSearch" href="https://search.rakuten.co.jp/search/mall/資格+テキスト+問題集/" target="_blank" rel="noopener noreferrer">この資格の教材を楽天市場で検索 →</a> <small>通常の検索リンクです。商品・在庫・価格は購入先で確認してください。</small></p>
-  <div id="materialFallback">
-  <div class="material-shop"><div><div class="affiliate-label">PR｜楽天市場で教材を探す</div><p>楽天市場で教材を探す</p><small>「楽天市場トップへ」から楽天市場のトップページへ移動します。コピーした検索語を貼り付けて探してください。</small></div><div class="material-banner"><a href="//af.moshimo.com/af/c/click?a_id=5837301&p_id=54&pc_id=54&pl_id=616" rel="nofollow sponsored" referrerpolicy="no-referrer-when-downgrade" attributionsrc><img src="//image.moshimo.com/af-img/0032/000000000616.gif" width="88" height="31" alt="楽天市場" style="border:none;"><span>楽天市場トップへ →</span></a><img src="//i.moshimo.com/af/i/impression?a_id=5837301&p_id=54&pc_id=54&pl_id=616" width="1" height="1" alt="" style="border:none;" loading="lazy"></div></div>
-  </div>
-  <aside class="event-product-offer" aria-labelledby="eventProductTitle">
-    <p class="affiliate-label">PR｜関連教材</p>
-    <h4 id="eventProductTitle">診断結果とは別の関連教材</h4>
-    <p>イベント検定を検討している方向けの関連教材です。購入前に、受験する試験に対応する版か販売ページで確認してください。</p>
-    <div class="event-product-card">
-      <a class="event-product-link" href="//af.moshimo.com/af/c/click?a_id=5837301&amp;p_id=54&amp;pc_id=54&amp;pl_id=616&amp;url=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18475531%2F&amp;m=http%3A%2F%2Fm.rakuten.co.jp%2Fbook%2Fi%2F21823585%2F" rel="nofollow sponsored" referrerpolicy="no-referrer-when-downgrade"><img src="//thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3391/9784901173391_1_5.jpg?_ex=128x128" alt="新版 イベント検定公式テキストの表紙" loading="lazy" width="128" height="128" style="border: medium;"><span><strong>新版　イベント検定公式テキスト</strong><span class="event-product-action">楽天市場で詳細を見る →</span></span></a>
-      <img src="//i.moshimo.com/af/i/impression?a_id=5837301&amp;p_id=54&amp;pc_id=54&amp;pl_id=616" alt="" loading="lazy" width="1" height="1" style="border: 0px;">
-    </div>
-  </aside>
-  <p class="disclosure">広告リンクを経由した購入で、運営者に報酬が発生することがあります。購入前に対応する試験・年度、在庫、新品・中古の別、送料込みの総額を販売ページで確認してください。</p>
+  <p id="materialDisclosure" class="disclosure" hidden>広告リンクを経由した購入で、運営者に報酬が発生することがあります。購入前に対応する試験・年度、在庫、新品・中古の別、送料込みの総額を販売ページで確認してください。</p>
 </section>
 <details class="business-support" id="businessSupport" hidden>
   <summary>PR / 事業用の会計ソフトも検討する方へ</summary>
@@ -115,7 +105,7 @@ msmaflink({"n":"7日でうかる！　FP3級 合格テキスト＆問題集　20
 <script src="assets/qualification-pages.js?v=20261018-site-improvements"></script>
 <script src="assets/exam-dates.js"></script>
 <script src="assets/study-catalog.js?v=20261020-rights-1"></script>
-<script src="assets/learning-guide.js?v=20261020-study-1"></script>
+<script src="assets/learning-guide.js?v=20261020-matched-materials-1"></script>
 <script src="assets/app.js?v=20261020-diagnosis-tap-1"></script>
 <div class="ad-wrap" id="siteAdPayload" aria-label="スポンサーリンク"><div class="ad-label">スポンサーリンク</div><!-- admax --><script src="https://adm.shinobi.jp/o/e9902be8e72218e27d6e6d8d6955455b"></script><!-- admax --></div>
 <script src="assets/ad-placement.js"></script>
