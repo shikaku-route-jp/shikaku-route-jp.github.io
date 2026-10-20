@@ -56,7 +56,7 @@ test("all 100 questions can be completed and saved in each course", () => {
 
 test("records and unfinished sessions from the original banks survive expansion", () => {
   const legacy = { itpassport: ["swot", 0], "world-heritage3": ["heritage-purpose", 1], "eiken-pre2": ["improve", 1] };
-  for (const entry of catalog) {
+  for (const entry of catalog.filter(item => Object.hasOwn(legacy, item.id))) {
     const bank = require(path.join(root, "assets/study", entry.id + ".js"));
     const [id, choice] = legacy[entry.id];
     const old = { version: 1, records: { [id]: { attempts: 1, correct: 0, review: true, streak: 0 } }, daily: { [today]: [id] },
@@ -104,7 +104,7 @@ test("study pages stay within the owned-code size budget and load only their own
   }
 });
 
-for (const id of ["world-heritage3", "eiken-pre2"]) {
+for (const id of ["world-heritage3", "eiken-pre2", "bookkeeping3"]) {
   test(id + " supports balanced daily practice, area practice, resume and review", () => {
     const bank = require(path.join(root, "assets/study", id + ".js"));
     const state = core.emptyProgress();
@@ -251,4 +251,42 @@ test("daily records are unique and bounded while historical review remains", () 
   state.daily["2099-01-01"] = [q.id];
   assert.deepEqual(core.normalizeProgress(state, course, today).daily[today], [q.id]);
   assert.equal(core.normalizeProgress(state, course, today).daily["2099-01-01"], undefined);
+});
+
+test("bookkeeping entries balance and representative calculations keep their expected results", () => {
+  const bank = require("../assets/study/bookkeeping3.js");
+  let entries = 0;
+  const amount = text => [...text.matchAll(/([0-9][0-9,]*)円/g)].reduce((sum, match) => sum + Number(match[1].replaceAll(",", "")), 0);
+  for (const q of bank.questions) {
+    const answer = q.choices[q.answer];
+    if (!answer.startsWith("借方：")) continue;
+    const sides = answer.split(" ／ ");
+    assert.equal(sides.length, 2, q.id);
+    assert.ok(sides[1].startsWith("貸方："), q.id);
+    assert.ok(amount(sides[0]) > 0, q.id);
+    assert.equal(amount(sides[0]), amount(sides[1]), q.id + ": journal must balance");
+    entries++;
+  }
+  assert.ok(entries >= 60);
+  const expected = {
+    "equity-equation": "700,000円",
+    "net-profit": "300,000円",
+    "cost-of-sales": "180,000円",
+    "depreciation-amount": "24,000円",
+    "equipment-book-value": "40,000円",
+    "allowance-target": "2,000円",
+    "total-assets": "140,000円",
+    "gross-profit": "120,000円",
+    "credit-card-sale": "借方：クレジット売掛金 9,700円・支払手数料 300円 ／ 貸方：売上 10,000円",
+    "allowance-top-up": "借方：貸倒引当金繰入 1,500円 ／ 貸方：貸倒引当金 1,500円",
+    "prepaid-insurance": "借方：前払保険料 3,000円 ／ 貸方：保険料 3,000円",
+    "unearned-rent": "借方：受取家賃 9,000円 ／ 貸方：前受家賃 9,000円"
+  };
+  for (const [id, answer] of Object.entries(expected)) {
+    const q = bank.questions.find(q => q.id === id);
+    assert.ok(q, id);
+    assert.equal(q.choices[q.answer], answer, id);
+  }
+  const guide = fs.readFileSync(path.join(root, "qualifications/bookkeeping3.html"), "utf8");
+  assert.ok(guide.includes('href="../study/bookkeeping3.html"'));
 });
