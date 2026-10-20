@@ -96,6 +96,7 @@
 @media print{.result-share{display:none!important}}
 
 /* Keep candidate comparisons inside their own scroll area on small screens. */
+.result-stack{grid-template-columns:minmax(0,1fr)}
 .comparison-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
 .comparison-controls label{min-width:0;font:700 12px/1.6 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
 .comparison-controls select{display:block;width:100%;min-width:0;min-height:44px;margin-top:6px;padding:10px 8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
