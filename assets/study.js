@@ -125,6 +125,14 @@
     if (className) item.className = className;
     return item;
   }
+  function sourceLink(question) {
+    if (!question.source || !question.source.startsWith("https://")) return null;
+    const paragraph = node("p", undefined, "study-small");
+    const link = node("a", "このテーマの確認元 →");
+    link.href = question.source;
+    paragraph.append(link);
+    return paragraph;
+  }
   function storageMessage() {
     get("studyStorageNote").textContent = storageWorks
       ? "記録はこのブラウザに保存します。別の端末との共有はありません。"
@@ -164,6 +172,8 @@
     panel.replaceChildren(node("h3", result.correct ? "正解です" : "この問題は復習に残しました"),
       node("p", "正解：" + question.choices[question.answer], "study-answer"),
       node("p", question.explanation), node("p", "覚えるポイント：" + question.takeaway, "study-takeaway"));
+    const source = sourceLink(question);
+    if (source) panel.append(source);
   }
   function renderQuestion(focus = true) {
     const session = progress.active;
@@ -245,9 +255,15 @@
     get("studyResetStatus").textContent = storageWorks ? `${course.name}の学習記録を消しました。` : "画面内の記録をリセットしました。保存済み記録の削除は確認できません。";
   });
   const reference = get("studyReferenceList");
+  const cards = reference.dataset.studyReference === "cards";
+  get("studyCardsLink")?.addEventListener("click", () => { get("studyMemoryCards").open = true; });
   for (const q of course.questions) {
     const detail = node("details");
-    detail.append(node("summary", course.areas[q.area] + " / " + q.topic), node("p", q.explanation), node("p", q.takeaway, "study-takeaway"));
+    detail.append(node("summary", cards ? q.question : course.areas[q.area] + " / " + q.topic));
+    if (cards) detail.append(node("p", "答え：" + q.choices[q.answer], "study-answer"));
+    detail.append(node("p", q.explanation), node("p", q.takeaway, "study-takeaway"));
+    const source = sourceLink(q);
+    if (source) detail.append(source);
     reference.append(detail);
   }
   get("studyBootNote").hidden = true;
