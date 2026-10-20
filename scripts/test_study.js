@@ -16,6 +16,8 @@ test("every published course has a matching bank, page, source and valid questio
     assert.equal(bank.id, entry.id);
     assert.equal(bank.name, entry.name);
     assert.equal(bank.questions.length, entry.count);
+    assert.equal(bank.questions.length, 100);
+    assert.equal(new Set(bank.questions.map(q => (q.example || "") + q.question)).size, entry.count);
     assert.equal(new Set(bank.questions.map(q => q.id)).size, entry.count);
     assert.ok(fs.existsSync(path.join(root, entry.href)));
     assert.ok(home.includes(path.basename(entry.href)));
@@ -35,6 +37,73 @@ test("every published course has a matching bank, page, source and valid questio
   }
 });
 
+test("all 100 questions can be completed and saved in each course", () => {
+  for (const entry of catalog) {
+    const bank = require(path.join(root, "assets/study", entry.id + ".js"));
+    const state = core.emptyProgress();
+    assert.equal(core.startSession(state, bank, "random", { size: 100 }), true);
+    for (let i = 0; i < 100; i++) {
+      const q = bank.questions.find(q => q.id === state.active.ids[state.active.position]);
+      assert.equal(core.answerSession(state, bank, q.answer, today), true);
+      assert.equal(core.advanceSession(state), i < 99);
+    }
+    assert.equal(state.active.results.filter(r => r.correct).length, 100);
+    const saved = core.normalizeProgress(JSON.parse(JSON.stringify(state)), bank, today);
+    assert.equal(core.stats(saved, bank, today).seen, 100);
+    assert.equal(core.stats(saved, bank, today).review, 0);
+  }
+});
+
+test("records and unfinished sessions from the original banks survive expansion", () => {
+  const legacy = { itpassport: ["swot", 0], "world-heritage3": ["heritage-purpose", 1], "eiken-pre2": ["improve", 1] };
+  for (const entry of catalog) {
+    const bank = require(path.join(root, "assets/study", entry.id + ".js"));
+    const [id, choice] = legacy[entry.id];
+    const old = { version: 1, records: { [id]: { attempts: 1, correct: 0, review: true, streak: 0 } }, daily: { [today]: [id] },
+      active: { mode: "review", bankVersion: 1, ids: [id], position: 0, results: [] } };
+    const restored = core.normalizeProgress(old, bank, today);
+    assert.equal(restored.records[id].review, true);
+    assert.deepEqual(restored.active.ids, [id]);
+    assert.equal(core.answerSession(restored, bank, choice, today), true);
+    assert.equal(restored.active.results[0].correct, true);
+    assert.equal(restored.records[id].attempts, 2);
+  }
+});
+
+test("study ads load once per page, after core UI, outside answer panels", () => {
+  const pages = ["study/index.html", ...catalog.map(c => c.href)];
+  for (const name of pages) {
+    const page = fs.readFileSync(path.join(root, name), "utf8");
+    const tag = 'https://adm.shinobi.jp/o/e9902be8e72218e27d6e6d8d6955455b';
+    assert.equal(page.split(tag).length - 1, 1);
+    assert.equal(page.split('id="siteAdSlot"').length - 1, 1);
+    assert.ok(page.includes('aria-label="スポンサーリンク"'));
+    assert.ok(page.indexOf('id="siteAdSlot"') > page.indexOf('id="studyResult"') || name === "study/index.html");
+    if (name !== "study/index.html") {
+      const coreScript = page.match(/<script src="\.\.\/assets\/study\.js[^\"]*"><\/script>/);
+      assert.ok(coreScript, "core must execute before the parser-time vendor tag");
+      assert.ok(page.indexOf(coreScript[0]) < page.indexOf(tag));
+    }
+    assert.ok(page.indexOf('assets/ad-placement.js') > page.indexOf(tag));
+  }
+});
+
+test("study pages stay within the owned-code size budget and load only their own bank", () => {
+  for (const name of ["study/index.html", ...catalog.map(c => c.href)]) {
+    const html = fs.readFileSync(path.join(root, name), "utf8");
+    assert.ok(Buffer.byteLength(html) <= 32 * 1024, name + ": HTML exceeds 32 KiB");
+    const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(m => m[1]).filter(s => !s.startsWith("https:") && !s.startsWith("//"));
+    const styles = [...html.matchAll(/<link[^>]+href="([^"]+\.css(?:\?[^"]*)?)"/g)].map(m => m[1]);
+    const size = files => files.reduce((sum, file) => sum + fs.statSync(path.resolve(file.startsWith("/") ? root : path.dirname(path.join(root, name)), file.replace(/^\//, "").split("?")[0])).size, 0);
+    assert.ok(size(scripts) <= 128 * 1024, name + ": owned JS exceeds 128 KiB; split loading before expanding");
+    assert.ok(size(styles) <= 64 * 1024, name + ": CSS exceeds 64 KiB");
+    const banks = scripts.filter(s => /\/study\/[^/]+\.js/.test(s));
+    const entry = catalog.find(c => c.href === name);
+    assert.equal(banks.length, entry ? 1 : 0);
+    if (entry) assert.ok(banks[0].includes("/study/" + entry.id + ".js"));
+  }
+});
+
 for (const id of ["world-heritage3", "eiken-pre2"]) {
   test(id + " supports balanced daily practice, area practice, resume and review", () => {
     const bank = require(path.join(root, "assets/study", id + ".js"));
@@ -45,8 +114,8 @@ for (const id of ["world-heritage3", "eiken-pre2"]) {
     assert.equal(new Set(daily.map(q => q.id)).size, 5);
     assert.equal(new Set(daily.map(q => q.area)).size, 3);
     for (const area of Object.keys(bank.areas)) {
-      const picked = core.pickQuestions(bank, state, "random", { area, size: 30 });
-      assert.equal(picked.length, 10);
+      const picked = core.pickQuestions(bank, state, "random", { area, size: 100 });
+      assert.equal(picked.length, bank.questions.filter(q => q.area === area).length);
       assert.ok(picked.every(q => q.area === area));
     }
     core.startSession(state, bank, "daily", { today });
@@ -81,10 +150,10 @@ test("daily set is stable, unique and covers the three areas", () => {
 test("selected area and actual pool limit session size without repeats", () => {
   const state = core.emptyProgress();
   for (const area of Object.keys(course.areas)) {
-    const picked = core.pickQuestions(course, state, "random", { area, size: 30 });
-    assert.equal(picked.length, 10);
+    const picked = core.pickQuestions(course, state, "random", { area, size: 100 });
+    assert.equal(picked.length, course.questions.filter(q => q.area === area).length);
     assert.ok(picked.every(q => q.area === area));
-    assert.equal(new Set(picked.map(q => q.id)).size, 10);
+    assert.equal(new Set(picked.map(q => q.id)).size, picked.length);
   }
   assert.deepEqual(core.pickQuestions(course, state, "random", { area: "missing" }), []);
   assert.deepEqual(core.pickQuestions(course, state, "unknown"), []);
