@@ -184,7 +184,10 @@
     get("studyQuestionCount").textContent = `${session.position + 1} / ${session.ids.length}問`;
     get("studyProgress").max = session.ids.length;
     get("studyProgress").value = session.position + (result ? 1 : 0);
-    get("studyTopic").textContent = course.areas[question.area] + " / " + question.topic;
+    get("studyTopic").textContent = course.areas[question.area] + (result ? " / " + question.topic : "");
+    const example = get("studyExample");
+    example.hidden = !question.example;
+    example.textContent = question.example || "";
     get("studyQuestion").textContent = question.question;
     const choices = get("studyChoices");
     choices.replaceChildren();
@@ -230,7 +233,7 @@
       const q = byId.get(result.id);
       const detail = node("details");
       detail.append(node("summary", (result.correct ? "○ 正解：" : "復習：") + q.topic),
-        node("p", q.question), node("p", "選んだ回答：" + q.choices[result.choice]),
+        node("p", (q.example ? q.example + " " : "") + q.question), node("p", "選んだ回答：" + q.choices[result.choice]),
         node("p", "正解：" + q.choices[q.answer]), node("p", q.explanation));
       list.append(detail);
     }
@@ -256,16 +259,33 @@
   });
   const reference = get("studyReferenceList");
   const cards = reference.dataset.studyReference === "cards";
-  get("studyCardsLink")?.addEventListener("click", () => { get("studyMemoryCards").open = true; });
-  for (const q of course.questions) {
-    const detail = node("details");
-    detail.append(node("summary", cards ? q.question : course.areas[q.area] + " / " + q.topic));
-    if (cards) detail.append(node("p", "答え：" + q.choices[q.answer], "study-answer"));
-    detail.append(node("p", q.explanation), node("p", q.takeaway, "study-takeaway"));
-    const source = sourceLink(q);
-    if (source) detail.append(source);
-    reference.append(detail);
+  let referenceReady = false;
+  function renderReference() {
+    if (referenceReady) return;
+    referenceReady = true;
+    const fragment = document.createDocumentFragment();
+    for (const q of course.questions) {
+      const detail = node("details");
+      const summary = node("summary");
+      if (cards && q.example) {
+        const sentence = node("span", q.example, "study-card-example");
+        sentence.lang = "en";
+        summary.append(sentence);
+      }
+      summary.append(node("span", cards ? q.question : course.areas[q.area] + " / " + q.topic));
+      detail.append(summary);
+      if (cards) detail.append(node("p", "答え：" + q.choices[q.answer], "study-answer"));
+      detail.append(node("p", q.explanation), node("p", q.takeaway, "study-takeaway"));
+      const source = sourceLink(q);
+      if (source) detail.append(source);
+      fragment.append(detail);
+    }
+    reference.append(fragment);
   }
+  const referencePanel = reference.closest("details");
+  referencePanel.addEventListener("toggle", () => { if (referencePanel.open) renderReference(); });
+  get("studyCardsLink")?.addEventListener("click", () => { renderReference(); referencePanel.open = true; });
+  if (referencePanel.open) renderReference();
   get("studyBootNote").hidden = true;
   for (const id of ["studyDailyStart", "studyRandomStart", "studyReset"]) get(id).disabled = false;
   dashboard();
