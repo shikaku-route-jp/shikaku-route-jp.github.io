@@ -130,7 +130,7 @@ for (const id of ["world-heritage3", "eiken-pre2", "bookkeeping3"]) {
       core.answerSession(resumed, bank, first.answer, today);
     }
     assert.equal(core.stats(resumed, bank, today).review, 0);
-    const page = fs.readFileSync(path.join(root, "study", id + ".html"), "utf8");
+    const page = fs.readFileSync(path.join(root, catalog.find(entry => entry.id === id).href), "utf8");
     assert.ok(page.includes('data-study-reference="cards"'));
     assert.match(page, /カードを見るだけでは学習記録に加算されません/);
   });
