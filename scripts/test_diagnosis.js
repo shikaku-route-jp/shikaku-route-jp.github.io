@@ -9,12 +9,12 @@ function element(){const attrs={},classes=new Set();return {children:[],listener
  setAttribute(k,v){attrs[k]=v},getAttribute(k){return attrs[k]},addEventListener(k,v){this.listeners[k]=v},appendChild(child){this.children.push(child)},replaceChildren(){this.children=[]},
  focus(options){this.focusOptions=options;this.focused=true},scrollIntoView(options){this.scrolled=options},closest(){return {classList:{toggle(){}}}}};}
 function boot(reduced=false){
- const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,element()]));const shell=element();
- const document={getElementById(id){assert.ok(nodes.has(id),'missing '+id);return nodes.get(id)},createElement(){return element()},querySelector(){return shell},querySelectorAll(){return []}};
+ const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,element()]));const shell=element(),actions=element(),bounds={answer:null};
+ const document={getElementById(id){assert.ok(nodes.has(id),'missing '+id);return nodes.get(id)},createElement(){const node=element();node.getBoundingClientRect=()=>bounds.answer;return node},querySelector(selector){return selector==='.quiz-actions'?actions:shell},querySelectorAll(){return []}};
  const window={innerHeight:800,scrollY:200,scrollTo(options){this.lastScroll=options},matchMedia(){return {matches:reduced}},print(){},open(){}};
  const ctx=vm.createContext({window,document,location:{href:'https://shikaku-route-jp.github.io/'},navigator:{},setTimeout(){}});
  for(const name of ['exam-dates.js','qualification-sources.js','qualification-pages.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,'assets',name),'utf8'),ctx);
- return {window,nodes,shell,api:window.QualificationDiagnosis};
+ return {window,nodes,shell,actions,bounds,api:window.QualificationDiagnosis};
 }
 const answers={interests:['finance'],goal:['job'],strength:['numbers'],work:['desk'],study:[2],period:[8],difficulty:[2],language:[0],digital:[1],priority:['interest']};
 test('initial HTML includes all qualifications and guide links before JavaScript runs',()=>{
@@ -105,6 +105,25 @@ test('keyboard navigation still announces the new question without animated scro
  const {nodes,window}=boot();nodes.get('qTitle').getBoundingClientRect=()=>({top:110,bottom:170});
  nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click({detail:0});
  assert.equal(nodes.get('qTitle').focused,true);assert.equal(window.lastScroll,undefined);
+});
+
+test('question navigation accounts for the visible phone viewport and action bar',()=>{
+ const {nodes,window,shell,actions,bounds}=boot();
+ window.visualViewport={height:520};
+ nodes.get('quizHeader').offsetHeight=96;
+ nodes.get('qTitle').getBoundingClientRect=()=>({top:120,bottom:180});
+ shell.getBoundingClientRect=()=>({top:-150});
+ actions.offsetHeight=88;
+ bounds.answer={top:200,bottom:470};
+ nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click({detail:1});
+ assert.equal(window.lastScroll.behavior,'instant');assert.equal(window.lastScroll.top,38);
+ delete window.lastScroll;
+ bounds.answer={top:200,bottom:300};
+ nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click({detail:1});
+ assert.equal(window.lastScroll,undefined);
+ nodes.get('quizHeader').offsetHeight=140;
+ nodes.get('backBtn').listeners.click({detail:1});
+ assert.equal(window.lastScroll.behavior,'instant');
 });
 
 test('study-time advice preserves all four selected time ranges',()=>{

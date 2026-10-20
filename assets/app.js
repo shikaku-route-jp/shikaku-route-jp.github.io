@@ -175,8 +175,11 @@ function revealQuestion(event){
  // reserve animated scrolling for deliberate start/restart and final results.
  if(event?.detail===0)els.title.focus({preventScroll:true});
  const rect=els.title.getBoundingClientRect?.();if(!rect)return;
- const inset=$("quizProgress").offsetHeight||64;
- if(rect.top>=inset&&rect.bottom<=window.innerHeight-80)return;
+ const inset=$("quizHeader").offsetHeight||64;
+ const firstAnswer=els.grid.children[0]?.getBoundingClientRect?.();
+ const actionHeight=document.querySelector(".quiz-actions")?.offsetHeight||96;
+ const viewportHeight=window.visualViewport?.height||window.innerHeight;
+ if(rect.top>=inset&&(firstAnswer?.bottom??rect.bottom)<=viewportHeight-actionHeight)return;
  const main=document.querySelector(".quiz-main");
  window.scrollTo({top:Math.max(0,window.scrollY+main.getBoundingClientRect().top-12),behavior:"instant"});
 }
