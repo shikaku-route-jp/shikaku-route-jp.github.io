@@ -30,9 +30,42 @@ test("every published course has a matching bank, page, source and valid questio
       assert.equal(new Set(q.choices).size, 4);
       assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4);
       for (const key of ["topic", "question", "explanation", "takeaway"]) assert.ok(q[key]?.trim(), q.id + ":" + key);
+      if (q.source) assert.equal(new URL(q.source).protocol, "https:");
     }
   }
 });
+
+for (const id of ["world-heritage3", "eiken-pre2"]) {
+  test(id + " supports balanced daily practice, area practice, resume and review", () => {
+    const bank = require(path.join(root, "assets/study", id + ".js"));
+    const state = core.emptyProgress();
+    const daily = core.dailyQuestions(bank, today);
+    assert.deepEqual(daily, core.dailyQuestions(bank, today));
+    assert.equal(daily.length, 5);
+    assert.equal(new Set(daily.map(q => q.id)).size, 5);
+    assert.equal(new Set(daily.map(q => q.area)).size, 3);
+    for (const area of Object.keys(bank.areas)) {
+      const picked = core.pickQuestions(bank, state, "random", { area, size: 30 });
+      assert.equal(picked.length, 10);
+      assert.ok(picked.every(q => q.area === area));
+    }
+    core.startSession(state, bank, "daily", { today });
+    const first = daily[0];
+    core.answerSession(state, bank, (first.answer + 1) % 4, today);
+    const resumed = core.normalizeProgress(JSON.parse(JSON.stringify(state)), bank, today);
+    assert.equal(resumed.records[first.id].review, true);
+    assert.equal(core.answerSession(resumed, bank, first.answer, today), false);
+    for (let round = 0; round < 2; round++) {
+      core.startSession(resumed, bank, "review", { size: 5 });
+      assert.deepEqual(resumed.active.ids, [first.id]);
+      core.answerSession(resumed, bank, first.answer, today);
+    }
+    assert.equal(core.stats(resumed, bank, today).review, 0);
+    const page = fs.readFileSync(path.join(root, "study", id + ".html"), "utf8");
+    assert.ok(page.includes('data-study-reference="cards"'));
+    assert.match(page, /カードを見るだけでは学習記録に加算されません/);
+  });
+}
 
 test("daily set is stable, unique and covers the three areas", () => {
   const first = core.dailyQuestions(course, today);
