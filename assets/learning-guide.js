@@ -69,9 +69,14 @@
     if (practice) {
       practice.hidden = !course;
       const link = document.getElementById("studyPracticeLink");
-      link.href = course ? course.href : "study/";
-      link.textContent = course ? `${course.name}の基礎を無料で5問練習する →` : "無料の資格学習を見る →";
+      link.href = course ? `${course.href}#studySetup` : "study/";
+      link.textContent = course ? `${course.name}の「今日の5問」へ →` : "無料の資格学習を見る →";
     }
+    document.getElementById("studyPracticeNote").textContent = course
+      ? (course.name === main.name
+        ? "まずは無料の入門問題で、学ぶ内容を試してみましょう。公式教材や試験範囲全体に対応した問題集ではありません。"
+        : "高校基礎の英単語・熟語を練習できます。英検準2級の出題範囲全体に対応したコースではありません。")
+      : `${main.name}の練習コースは未公開です。まず受験・学習ガイドや、下の教材・学び方の案内から確認しましょう。`;
     document.getElementById("learningSummary").textContent = guide.summary;
     const materialHref = PRODUCT_GUIDES[main.name];
     document.getElementById("materialsGuideOffer").hidden = !materialHref;
