@@ -3,18 +3,18 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-function element(){const attrs={},classes=new Set();return {children:[],listeners:{},style:{},textContent:'',hidden:false,disabled:false,
+function element(){const attrs={},classes=new Set();return {children:[],listeners:{},style:{},textContent:'',hidden:false,disabled:false,contains(target){return target===this||this.children.includes(target)},
  get innerHTML(){return this._html||''},set innerHTML(value){this._html=value;this.children=[]},
  classList:{add(x){classes.add(x)},remove(x){classes.delete(x)},contains(x){return classes.has(x)},toggle(){}},
  setAttribute(k,v){attrs[k]=v},getAttribute(k){return attrs[k]},addEventListener(k,v){this.listeners[k]=v},appendChild(child){this.children.push(child)},replaceChildren(){this.children=[]},
  focus(options){this.focusOptions=options;this.focused=true},scrollIntoView(options){this.scrolled=options},closest(){return {classList:{toggle(){}}}}};}
 function boot(reduced=false){
- const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,element()]));const shell=element(),actions=element(),bounds={answer:null};
- const document={getElementById(id){assert.ok(nodes.has(id),'missing '+id);return nodes.get(id)},createElement(){const node=element();node.getBoundingClientRect=()=>bounds.answer;return node},querySelector(selector){return selector==='.quiz-actions'?actions:shell},querySelectorAll(){return []}};
- const window={innerHeight:800,scrollY:200,scrollTo(options){this.lastScroll=options},matchMedia(){return {matches:reduced}},print(){},open(){}};
- const ctx=vm.createContext({window,document,location:{href:'https://shikaku-route-jp.github.io/'},navigator:{},setTimeout(){}});
+ const nodes=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,element()]));const shell=element(),actions=element(),bounds={answer:null},frames=[],tasks=[];
+ const document={elementFromPoint(){return bounds.target},getElementById(id){assert.ok(nodes.has(id),'missing '+id);return nodes.get(id)},createElement(){const node=element();node.getBoundingClientRect=()=>bounds.answer;return node},querySelector(selector){return selector==='.quiz-actions'?actions:shell},querySelectorAll(){return []}};
+ const window={requestAnimationFrame(fn){frames.push(fn)},innerHeight:800,scrollY:200,scrollTo(options){this.lastScroll=options},matchMedia(){return {matches:reduced}},print(){},open(){}};
+ const ctx=vm.createContext({window,document,location:{href:'https://shikaku-route-jp.github.io/'},navigator:{},setTimeout(fn){tasks.push(fn)}});
  for(const name of ['exam-dates.js','qualification-sources.js','qualification-pages.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,'assets',name),'utf8'),ctx);
- return {window,nodes,shell,actions,bounds,api:window.QualificationDiagnosis};
+ return {window,nodes,shell,actions,bounds,flushFrame(){frames.splice(0).forEach(fn=>fn())},flushTasks(){tasks.splice(0).forEach(fn=>fn())},api:window.QualificationDiagnosis};
 }
 const answers={interests:['finance'],goal:['job'],strength:['numbers'],work:['desk'],study:[2],period:[8],difficulty:[2],language:[0],digital:[1],priority:['interest']};
 test('initial HTML includes all qualifications and guide links before JavaScript runs',()=>{
@@ -135,4 +135,74 @@ test('study-time advice preserves all four selected time ranges',()=>{
   }
   assert.ok(nodes.get('adviceList').innerHTML.includes(['30分未満','30分〜1時間','1〜2時間','2時間以上'][study]));
  }
+});
+
+function pointer(button,type,extra={}){
+ const event={pointerId:1,pointerType:'touch',isPrimary:true,button:0,clientX:100,clientY:100,...extra};
+ button.listeners[type](event);
+}
+function tap(button,bounds){bounds.target=button;pointer(button,'pointerdown');pointer(button,'pointerup');}
+function compatClick(button){let prevented=false;button.listeners.click({detail:1,pointerType:'touch',preventDefault(){prevented=true}});assert.equal(prevented,true);}
+test('touch release selects immediately and its later click cannot toggle the answer off',()=>{
+ const {nodes,bounds}=boot();const answer=nodes.get('answerGrid').children[0];
+ pointer(answer,'pointerdown');assert.equal(answer.getAttribute('aria-pressed'),'false');
+ bounds.target=answer;pointer(answer,'pointerup');assert.equal(answer.getAttribute('aria-pressed'),'true');
+ compatClick(answer);assert.equal(answer.getAttribute('aria-pressed'),'true');
+ tap(answer,bounds);assert.equal(answer.getAttribute('aria-pressed'),'false');
+});
+test('touch navigation advances once even when revisiting already answered questions',()=>{
+ const {nodes,bounds}=boot(),next=nodes.get('nextBtn'),back=nodes.get('backBtn');
+ for(let i=0;i<3;i++){tap(nodes.get('answerGrid').children[0],bounds);tap(next,bounds);compatClick(next);}
+ assert.equal(nodes.get('qCount').textContent,'Q4 / 10');
+ tap(back,bounds);compatClick(back);assert.equal(nodes.get('qCount').textContent,'Q3 / 10');
+ tap(back,bounds);compatClick(back);assert.equal(nodes.get('qCount').textContent,'Q2 / 10');
+ tap(next,bounds);compatClick(next);assert.equal(nodes.get('qCount').textContent,'Q3 / 10');
+ assert.equal(nodes.get('qTitle').focused,undefined);
+ next.listeners.click({detail:0});assert.equal(nodes.get('qCount').textContent,'Q4 / 10');
+ assert.equal(nodes.get('qTitle').focused,true);
+});
+test('dragging, cancelled contacts, release outside and secondary contacts do not select',()=>{
+ for(const mode of ['drag','cancel','outside','secondary','far-release','long-press']){
+  const {nodes,bounds}=boot(),answer=nodes.get('answerGrid').children[0];bounds.target=answer;
+  pointer(answer,'pointerdown');
+  if(mode==='drag')pointer(answer,'pointermove',{clientY:125});
+  if(mode==='cancel')pointer(answer,'pointercancel');
+  if(mode==='long-press')answer.listeners.contextmenu();
+  if(mode==='outside')bounds.target=element();
+  if(mode==='secondary')pointer(answer,'pointerdown',{isPrimary:false,pointerId:2});
+  pointer(answer,'pointerup',mode==='far-release'?{clientY:125}:{});
+  compatClick(answer);assert.equal(answer.getAttribute('aria-pressed'),'false',mode);
+ }
+});
+test('pen uses immediate release while mouse keeps native click behavior',()=>{
+ const {nodes,bounds}=boot(),answer=nodes.get('answerGrid').children[0];bounds.target=answer;
+ pointer(answer,'pointerdown',{pointerType:'pen'});pointer(answer,'pointerup',{pointerType:'pen'});
+ assert.equal(answer.getAttribute('aria-pressed'),'true');compatClick(answer);
+ pointer(answer,'pointerdown',{pointerType:'mouse'});pointer(answer,'pointerup',{pointerType:'mouse'});
+ assert.equal(answer.getAttribute('aria-pressed'),'true');answer.listeners.click({detail:1});
+ assert.equal(answer.getAttribute('aria-pressed'),'false');
+});
+test('touch can complete all ten questions and cannot advance an unanswered question',()=>{
+ const {nodes,bounds}=boot(),next=nodes.get('nextBtn');tap(next,bounds);
+ assert.equal(nodes.get('qCount').textContent,'Q1 / 10');
+ for(let i=0;i<10;i++){tap(nodes.get('answerGrid').children[0],bounds);tap(next,bounds);compatClick(next);}
+ assert.equal(nodes.get('result').classList.contains('show'),true);
+});
+
+test('question updates finish before analytics runs and funnel events keep their order',()=>{
+ const {nodes,bounds,window,flushFrame,flushTasks}=boot(),events=[];
+ window.SiteAnalytics={track(name,params){events.push({name,params,question:nodes.get('qCount').textContent})}};
+ for(let i=0;i<10;i++){tap(nodes.get('answerGrid').children[0],bounds);tap(nodes.get('nextBtn'),bounds);}
+ assert.equal(nodes.get('result').classList.contains('show'),true);
+ assert.equal(events.length,0,'analytics must not run within tap handling');
+ flushFrame();assert.equal(events.length,0,'the frame must have a chance to paint');flushTasks();
+ assert.deepEqual(events.map(x=>x.name),['diagnosis_start',...Array(10).fill('diagnosis_step'),'diagnosis_complete']);
+ assert.deepEqual(events.filter(x=>x.name==='diagnosis_step').map(x=>x.params.step),[1,2,3,4,5,6,7,8,9,10]);
+ assert.ok(events.every(x=>x.question==='Q10 / 10'));
+});
+test('analytics still queues without requestAnimationFrame',()=>{
+ const {nodes,window,flushTasks}=boot();delete window.requestAnimationFrame;
+ nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click();
+ assert.equal(window.dataLayer,undefined);flushTasks();
+ assert.deepEqual(Array.from(window.dataLayer,x=>x.event),['diagnosis_start','diagnosis_step']);
 });
