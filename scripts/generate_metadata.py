@@ -11,7 +11,7 @@ from pathlib import Path
 import re
 import subprocess
 import xml.etree.ElementTree as ET
-from site_common import ROOT, BASE, Page, content_pages, page_url
+from site_common import ROOT, BASE, Page, content_pages, page_url, canonical_url
 
 JST = timezone(timedelta(hours=9))
 IMAGE = BASE + '/assets/ogp.png'
@@ -60,12 +60,12 @@ def replace_meta(text, key, value, prop=False):
     return text.replace('</head>', f'  <meta {attr}="{key}" content="{html.escape(value, quote=True)}">\n</head>')
 
 def render(path, page, published):
-    text = path.read_text(encoding='utf-8'); url = page_url(path)
+    text = path.read_text(encoding='utf-8'); url = canonical_url(path, page)
     # Rebuild one bounded block so a second generation is byte-for-byte identical.
     text = re.sub(r'\s*<!-- shared-site-metadata:start -->.*?<!-- shared-site-metadata:end -->', '', text, flags=re.S)
     text = re.sub(r'\s*<!-- site-analytics:start -->.*?<!-- site-analytics:end -->', '', text, flags=re.S)
     if path != ROOT/'index.html':
-        text=text.replace('</head>', '<!-- site-analytics:start --><script src="/assets/analytics-config.js" defer></script><script src="/assets/analytics.js" defer></script><!-- site-analytics:end --></head>')
+        text=re.sub(r'\s*</head>', '\n<!-- site-analytics:start --><script src="/assets/analytics-config.js" defer></script><script src="/assets/analytics.js" defer></script><!-- site-analytics:end --></head>', text, count=1)
     text = re.sub(r'\s*<meta\s+(?:name|property)=["\'](?:og:[^"\']+|twitter:[^"\']+)["\'][^>]*>', '', text, flags=re.I)
     text = re.sub(r'\s*<link\s+rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*>', '', text, flags=re.I)
     is_article = path.parent.name == 'articles' and path.name != 'index.html'
@@ -81,7 +81,10 @@ def render(path, page, published):
             data['image'] = {'@type':'ImageObject','url':IMAGE,'width':1200,'height':630}
         return '<script type="application/ld+json">'+json.dumps(data,ensure_ascii=False,separators=(',',':'))+'</script>'
     text = re.sub(r'\s*<script type="application/ld\+json">(.*?)</script>',schema,text,flags=re.S)
-    if not page.canonicals:
+    if page.refresh_target and 'noindex' in page.meta.get('robots', '').lower():
+        text = re.sub(r'\s*<link\s+rel=["\']canonical["\'][^>]*>', '', text, flags=re.I)
+        text = text.replace('</head>', f'<link rel="canonical" href="{html.escape(url, quote=True)}"></head>')
+    elif not page.canonicals:
         text = text.replace('</head>',f'<link rel="canonical" href="{url}"></head>')
     if is_article and 'article-byline' not in text:
         text = text.replace('<div class="article-meta">','<p class="article-byline">執筆・編集：<a href="../about.html#operator">shikaku-route-jp</a></p><div class="article-meta">')

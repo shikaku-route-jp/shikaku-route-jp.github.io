@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch
 
 import generate_metadata as metadata
+import site_common
 
 
 class ContentDates(unittest.TestCase):
@@ -96,6 +97,34 @@ class ContentDates(unittest.TestCase):
         path = self.root / 'new.html'
         path.write_text(self.text, encoding='utf-8')
         self.assertEqual(metadata.modified_day(path), '2026-10-20')
+
+
+class MigrationMetadata(unittest.TestCase):
+    def test_redirect_canonical_and_og_follow_destination_and_remain_stable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / 'study' / 'old.html'
+            path.parent.mkdir()
+            path.write_text('<html><head><title>Moved</title>'
+                            '<meta name="robots" content="noindex,follow">'
+                            '<meta http-equiv="Refresh" content="0; URL=new.html">'
+                            '<link rel="canonical" href="https://shikaku-route-jp.github.io/study/old.html">'
+                            '</head><body><main>Moved</main></body></html>')
+            with patch.object(site_common, 'ROOT', root), patch.object(metadata, 'ROOT', root), \
+                 patch.object(metadata, 'modified_day', return_value='2026-10-23'):
+                rendered, _ = metadata.render(path, site_common.Page(path.read_text()), {})
+                page = site_common.Page(rendered)
+                expected = site_common.BASE + '/study/new.html'
+                self.assertEqual(page.canonicals, [expected])
+                self.assertEqual(page.meta['og:url'], expected)
+                self.assertEqual(page.refresh_target, 'new.html')
+                path.write_text(rendered)
+                self.assertEqual(metadata.render(path, page, {})[0], rendered)
+
+    def test_noindex_without_a_redirect_keeps_its_own_canonical(self):
+        path = site_common.ROOT / 'private.html'
+        page = site_common.Page('<meta name="robots" content="noindex,follow">')
+        self.assertEqual(site_common.canonical_url(path, page), site_common.page_url(path))
 
 
 if __name__ == '__main__':

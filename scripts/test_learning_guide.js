@@ -180,17 +180,19 @@ test("FP3 product card loads once, only for the matching result", () => {
 
 test("all diagnosis results show only an exact product match and their own official source", () => {
   const { api, elements, window } = environment();
+  const materialGuides = { "FP3級": "materials/#fp3", "ITパスポート": "materials/#itpassport" };
   for (const main of qualifications) {
     api.render(main, "job");
     const hasProduct = main.name === "FP3級";
     assert.equal(elements.get("fp3ProductOffer").hidden, !hasProduct, main.name);
-    assert.equal(elements.get("materialsGuideOffer").hidden, !hasProduct, main.name);
+    const hasGuide = Boolean(materialGuides[main.name]);
+    assert.equal(elements.get("materialsGuideOffer").hidden, !hasGuide, main.name);
     assert.equal(elements.get("materialDisclosure").hidden, !hasProduct, main.name);
-    assert.equal(elements.get("learningMaterialStatus").hidden, hasProduct, main.name);
+    assert.equal(elements.get("learningMaterialStatus").hidden, hasGuide, main.name);
     assert.equal(elements.get("learningOfficialOffer").hidden, false, main.name);
     assert.equal(elements.get("learningOfficialLink").href, window.QUALIFICATION_SOURCES[main.name].url);
-    if (hasProduct) {
-      assert.equal(elements.get("materialsGuideLink").href, "materials/#fp3");
+    if (hasGuide) {
+      assert.equal(elements.get("materialsGuideLink").href, materialGuides[main.name]);
       assert.equal(elements.get("learningMaterialStatus").textContent, "");
     } else {
       assert.ok(elements.get("learningMaterialStatus").textContent.includes(main.name));

@@ -48,14 +48,15 @@ def main():
     label=f'<a href="../{pages[other]}">{e(other)}</a>' if other in pages else e(other)
     route.append((title2,label))
   if route:content+=section('ほかの資格とどう比べるか',table(route)+'<p>上の資格は学習内容や目的を比べるための候補です。この順番で必ず取得する必要があるという意味ではありません。法令上の受験資格とは分け、目標の試験を直接受けられるかは公式要綱で確認してください。</p>')
-  materials='<p><a class="button-link" href="../materials/#fp3">FP3級の教材案内を見る →</a></p>' if name=='FP3級' else '<p><a href="../articles/before-buying-materials.html">教材選びの確認点を読む →</a> ／ <a href="../materials/">教材案内（掲載中：FP3級・イベント検定） →</a></p>'
+  material_anchor={'FP3級':'fp3','ITパスポート':'itpassport'}.get(name)
+  materials=f'<p><a class="button-link" href="../materials/#{material_anchor}">{e(name)}の教材案内を見る →</a></p>' if material_anchor else '<p><a href="../articles/before-buying-materials.html">教材選びの確認点を読む →</a> ／ <a href="../materials/">掲載中の教材案内を見る →</a></p>'
   if name in practice:
    materials=f'<p><a class="button-link" href="../{e(practice[name]["href"])}">{e(name)}の基礎を無料で5問練習する →</a></p>'+materials
   content+=section('関連する記事と次の行動',f'<p><a href="../articles/{g["article"]}">{e(article_titles[g["article"]])} →</a></p>'+materials+'<p>今の条件で候補を比べ直したい場合は、無料診断で興味・目的・学習時間を整理できます。結果に出た資格が複数あるときは、名前の印象だけで決めず、公式の問題例と仕事で使う場面を並べて比較しましょう。</p><div class="return-row"><a class="button-link" href="../#diagnosis">10問の資格診断をする →</a><a class="button-link secondary" href="./">資格ガイド一覧</a></div>')
   content+='</div></article>'
   (directory/(g['slug']+'.html')).write_text(document(title,f'{name}の公式日程・受験時の注意点・学習の進め方と、診断上の目安を整理します。',g['slug']+'.html',content,[('診断トップ',BASE+'/'),('資格ガイド',BASE+'/qualifications/'),(name,url)]))
  cards=''.join(f'<a class="article-card" href="{g["slug"]}.html"><span class="category">{e(labels[quals[n]["category"]])}</span><h2>{e(n)}</h2><p>{e(g["fit"][:90])}…</p><span class="more">受験・学習ガイド →</span></a>' for n,g in guides.items())
- body=f'<p class="breadcrumb"><a href="../">診断トップ</a> ／ 資格ガイド</p><h1>資格ごとの受験・学習ガイド</h1><p>{len(guides)}資格の公式情報の確認先と、学習を始める前の判断材料をまとめています。日程を掲載していない資格は公式案内から確認してください。</p><p><a href="../materials/">教材案内（FP3級・イベント検定） →</a></p><div class="article-grid">'+cards+'</div>'
+ body=f'<p class="breadcrumb"><a href="../">診断トップ</a> ／ 資格ガイド</p><h1>資格ごとの受験・学習ガイド</h1><p>{len(guides)}資格の公式情報の確認先と、学習を始める前の判断材料をまとめています。日程を掲載していない資格は公式案内から確認してください。</p><p><a href="../materials/">掲載中の教材案内を見る →</a></p><div class="article-grid">'+cards+'</div>'
  (directory/'index.html').write_text(document('資格ごとの受験・学習ガイド',f'{len(guides)}資格の受験条件・日程の確認先、仕事内容と学習の始め方。診断結果から資格を詳しく比較できます。','',body,[('診断トップ',BASE+'/'),('資格ガイド',BASE+'/qualifications/')]))
  print(f'Rendered {len(guides)} qualification guides and index.')
 

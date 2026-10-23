@@ -8,7 +8,7 @@ import json
 import struct
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
-from site_common import BASE, Page, content_pages, page_url
+from site_common import BASE, Page, content_pages, page_url, canonical_url
 from generate_metadata import JST, modified_day
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -146,8 +146,14 @@ if not static_directory or static_directory[1].count('class="qualification-card"
     errors.append('homepage must include all qualifications in its initial HTML')
 for path, page in content_pages(include_noindex=True):
     rel = path.relative_to(ROOT); url = page_url(path)
-    if page.canonicals != [url]: errors.append(f"{rel}: canonical must be exactly its own URL ({url})")
-    if page.meta.get("og:url") != url: errors.append(f"{rel}: og:url does not match canonical")
+    canonical = canonical_url(path, page)
+    if page.canonicals != [canonical]: errors.append(f"{rel}: canonical must match its page or migration destination ({canonical})")
+    if page.meta.get("og:url") != canonical: errors.append(f"{rel}: og:url does not match canonical")
+    if page.refresh_target:
+        target = local_target(path, page.refresh_target)
+        if 'noindex' not in page.meta.get('robots', '').lower(): errors.append(f"{rel}: migration page must be noindex")
+        if not target or not target.is_file() or target == path.resolve(): errors.append(f"{rel}: migration must point to an existing, different local page")
+        elif Page(target.read_text(encoding='utf-8')).refresh_target: errors.append(f"{rel}: migration must not chain through another redirect")
     if page.meta.get("twitter:card") != "summary_large_image": errors.append(f"{rel}: large Twitter card missing")
     if not page.icons: errors.append(f"{rel}: favicon missing")
     image = page.meta.get("og:image", "")

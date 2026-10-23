@@ -1,8 +1,9 @@
 (() => {
   "use strict";
 
-  // Only publish a product guide when its exact qualification and supplied ad code match.
-  const PRODUCT_GUIDES = { "FP3級": "materials/#fp3" };
+  // Editorial book guides may use ordinary publisher links. Affiliate cards
+  // remain separate and require the supplied advertising code for that product.
+  const PRODUCT_GUIDES = { "FP3級": "materials/#fp3", "ITパスポート": "materials/#itpassport" };
 
   const ARTICLES = {
     "日商簿記3級": ["bookkeeping3-self-study-months.html", "簿記3級の独学の進め方を読む"],

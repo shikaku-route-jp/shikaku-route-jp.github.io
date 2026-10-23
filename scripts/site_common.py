@@ -1,7 +1,8 @@
 """Shared, dependency-free page inventory for generation and validation."""
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urljoin
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = 'https://shikaku-route-jp.github.io'
@@ -13,12 +14,16 @@ class Page(HTMLParser):
         self.meta = {}; self.canonicals = []; self.links = []; self.jsonld = []
         self.icons = []; self.title = ''; self._title = False; self._json = None
         self.anchor_links = []; self.h1_count = 0
+        self.refresh_target = None
         self.feed(text)
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == 'a' and a.get('href'): self.anchor_links.append(a['href'])
         if tag == 'h1': self.h1_count += 1
         if tag == 'meta': self.meta[a.get('property', a.get('name', '')).lower()] = a.get('content', '')
+        if tag == 'meta' and a.get('http-equiv', '').lower() == 'refresh':
+            match = re.search(r';\s*url\s*=\s*(.+)$', a.get('content', ''), re.I)
+            if match: self.refresh_target = match[1].strip().strip('"\'')
         if tag == 'link':
             if a.get('rel') == 'canonical': self.canonicals.append(a.get('href', ''))
             if 'icon' in a.get('rel', ''): self.icons.append(a.get('href', ''))
@@ -48,3 +53,9 @@ def page_url(path):
     if relative == 'index.html': relative = ''
     elif relative.endswith('/index.html'): relative = relative[:-10]
     return BASE + '/' + relative
+
+def canonical_url(path, page):
+    """A noindex migration page consolidates signals at its actual destination."""
+    if page.refresh_target and 'noindex' in page.meta.get('robots', '').lower():
+        return urljoin(page_url(path), page.refresh_target)
+    return page_url(path)

@@ -7,13 +7,14 @@
 .materials-memo h2{margin:10px 0;font-size:22px;line-height:1.5}
 .materials-memo ol{padding-left:1.4em;margin:12px 0;font-size:13px;line-height:2}
 .materials-memo>a{font:700 12px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
-.materials-jumps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:36px 0 22px;border-top:3px double var(--ink);border-bottom:3px double var(--ink)}
+.materials-jumps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:36px 0 22px;border-top:3px double var(--ink);border-bottom:3px double var(--ink)}
 .materials-jumps>a{position:relative;padding:20px 24px;text-decoration:none}
 .materials-jumps>a+a{border-left:1px solid var(--line)}
 .materials-jumps span{display:block;color:var(--muted);font:12px/1.8 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
 .materials-jumps strong{display:block;font-size:25px;line-height:1.7}
 .materials-jumps .materials-jump-action{margin-top:4px;color:var(--red);font-weight:700}
 .materials-jumps>a:hover{background:var(--paper)}
+@media(max-width:680px){.materials-jumps{grid-template-columns:1fr}.materials-jumps>a+a{border-left:0;border-top:1px solid var(--line)}}
 .materials-disclosure{padding:14px 18px;border-left:3px solid var(--gold);background:#f4eddd;font:12px/1.9 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
 .materials-disclosure b{margin-right:10px}
 .materials-shelf{display:grid;gap:28px;margin-top:26px}

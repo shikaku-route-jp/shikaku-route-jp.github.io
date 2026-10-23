@@ -66,9 +66,9 @@
       type: "cbt",
       label: "CBT：年間を通じて随時",
       application: "会場・日時を選んで申込み",
-      note: "2026年はCBTで実施。2027年1月以降に休止予定の案内があります。",
-      url: "https://www.ipa.go.jp/shiken/2026/cbt-202605-jisshi.html",
-      verified: "2026-10-05"
+      note: "2026年12月28日以降に試験の休止を予定。受験予定日と会場の空席は公式で再確認してください。",
+      url: "https://www.ipa.go.jp/shiken/mousikomi/cbt_ip.html",
+      verified: "2026-10-22"
     },
     "情報セキュリティマネジメント": {
       type: "cbt",
