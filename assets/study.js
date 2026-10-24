@@ -133,6 +133,37 @@
     paragraph.append(link);
     return paragraph;
   }
+  // Lesson IDs belong to the current page, never to saved progress.
+  const lessons = new Map();
+  document.querySelectorAll("[data-lesson-questions]").forEach(detail => {
+    for (const id of detail.dataset.lessonQuestions.split(/\s+/)) lessons.set(id, detail);
+  });
+  function lessonLink(question) {
+    const detail = lessons.get(question.id);
+    if (!detail) return null;
+    const paragraph = node("p");
+    const link = node("a", "このテーマを詳しく学ぶ →");
+    link.href = "#" + detail.id;
+    link.addEventListener("click", event => {
+      event.preventDefault();
+      detail.open = true;
+      let back = detail.querySelector(".study-lesson-return");
+      if (!back) {
+        back = node("button", "読んでいた解説に戻る →", "btn study-lesson-return");
+        back.type = "button";
+        detail.append(back);
+      }
+      back.onclick = () => {
+        const target = link.isConnected ? link : get("studySetupTitle");
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ block: "center", behavior: "auto" });
+      };
+      detail.querySelector("summary").focus({ preventScroll: true });
+      detail.scrollIntoView({ block: "start", behavior: "auto" });
+    });
+    paragraph.append(link);
+    return paragraph;
+  }
   function storageMessage() {
     get("studyStorageNote").textContent = storageWorks
       ? "記録はこのブラウザに保存します。別の端末との共有はありません。"
@@ -174,6 +205,8 @@
       node("p", question.explanation), node("p", "覚えるポイント：" + question.takeaway, "study-takeaway"));
     const source = sourceLink(question);
     if (source) panel.append(source);
+    const lesson = lessonLink(question);
+    if (lesson) panel.append(lesson);
   }
   function renderQuestion(focus = true) {
     const session = progress.active;
@@ -235,11 +268,17 @@
       detail.append(node("summary", (result.correct ? "○ 正解：" : "復習：") + q.topic),
         node("p", (q.example ? q.example + " " : "") + q.question), node("p", "選んだ回答：" + q.choices[result.choice]),
         node("p", "正解：" + q.choices[q.answer]), node("p", q.explanation));
+      const lesson = lessonLink(q);
+      if (lesson) detail.append(lesson);
       list.append(detail);
     }
     progress.active = null;
     save(); show("studyResult", "studyResultTitle");
   }
+  get("studyLessonsMenu")?.addEventListener("click", event => {
+    event.preventDefault();
+    show("studySetup", "studySetupTitle");
+  });
   get("studyDailyStart").addEventListener("click", () => begin("daily"));
   get("studyRandomStart").addEventListener("click", () => begin("random"));
   for (const id of ["studyReviewStart", "studyResultReview"]) get(id).addEventListener("click", () => {
@@ -278,6 +317,8 @@
       detail.append(node("p", q.explanation), node("p", q.takeaway, "study-takeaway"));
       const source = sourceLink(q);
       if (source) detail.append(source);
+      const lesson = lessonLink(q);
+      if (lesson) detail.append(lesson);
       fragment.append(detail);
     }
     reference.append(fragment);
