@@ -96,6 +96,20 @@
 @media print{.result-share{display:none!important}}
 
 /* Keep candidate comparisons inside their own scroll area on small screens. */
+.tie-summary{margin-top:22px;padding:18px;border:1px solid var(--line);background:#f8f2e6}
+.tie-summary h3{margin:0;font-size:20px;line-height:1.4}
+.tie-summary>p{margin:6px 0 14px;color:var(--muted);font:13px/1.7 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.tie-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tie-card{min-width:0;padding:14px;background:var(--paper);border:1px solid var(--line);overflow-wrap:anywhere}
+.tie-card h4{margin:0;font-size:16px;line-height:1.5}
+.tie-card p{margin:7px 0;font-size:13px;line-height:1.7}
+.tie-card small{display:block;margin-top:6px;color:var(--muted);font:12px/1.6 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.tie-links{display:flex;flex-wrap:wrap;gap:4px 14px;font:700 12px/1.6 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.tie-links a,.tie-compare{display:inline-flex;align-items:center;min-height:44px}
+.tie-compare{margin-top:6px;font:700 13px/1.6 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.metric-scope{margin:18px 0 -16px;color:var(--muted);font:12px/1.6 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+.route-practice{margin:14px 0}.route-practice .btn{max-width:100%;white-space:normal;overflow-wrap:anywhere}.route-practice small{display:block;margin-top:8px;color:var(--muted);font:12px/1.7 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}
+@media(max-width:680px){.tie-summary{padding:14px}.tie-list{grid-template-columns:minmax(0,1fr)}.route-practice .btn{width:100%}}
 .result-stack{grid-template-columns:minmax(0,1fr)}
 .comparison-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
 .comparison-controls label{min-width:0;font:700 12px/1.6 -apple-system,BlinkMacSystemFont,"Yu Gothic",sans-serif}

@@ -13,7 +13,7 @@ function boot(reduced=false){
  const document={elementFromPoint(){return bounds.target},getElementById(id){assert.ok(nodes.has(id),'missing '+id);return nodes.get(id)},createElement(){const node=element();node.getBoundingClientRect=()=>bounds.answer;return node},querySelector(selector){return selector==='.quiz-actions'?actions:shell},querySelectorAll(){return []}};
  const window={requestAnimationFrame(fn){frames.push(fn)},innerHeight:800,scrollY:200,scrollTo(options){this.lastScroll=options},matchMedia(){return {matches:reduced}},print(){},open(){}};
  const ctx=vm.createContext({window,document,location:{href:'https://shikaku-route-jp.github.io/'},navigator:{},setTimeout(fn){tasks.push(fn)}});
- for(const name of ['exam-dates.js','qualification-sources.js','qualification-pages.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,'assets',name),'utf8'),ctx);
+ for(const name of ['exam-dates.js','qualification-sources.js','qualification-pages.js','study-catalog.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,'assets',name),'utf8'),ctx);
  return {window,nodes,shell,actions,bounds,flushFrame(){frames.splice(0).forEach(fn=>fn())},flushTasks(){tasks.splice(0).forEach(fn=>fn())},api:window.QualificationDiagnosis};
 }
 const answers={interests:['finance'],goal:['job'],strength:['numbers'],work:['desk'],study:[2],period:[8],difficulty:[2],language:[0],digital:[1],priority:['interest']};
@@ -48,6 +48,32 @@ test('ties use shared ranks and include every candidate tied at the fifth place'
  const {api}=boot();const scores=[100,100,80,70,60,60,59];const grouped=api.rankingGroups(scores.map((score,i)=>({name:String(i),score})));
  assert.deepEqual(Array.from(grouped,x=>x.rank),[1,1,3,4,5,5]);assert.equal(grouped.length,6);assert.equal(grouped[0].tied,true);
  assert.match(api.resultText({topTies:[{name:'A'},{name:'B'}]}),/A ／ B（同率1位）/);
+});
+test('tied results explain each first-place qualification and link to a related entry course',()=>{
+ const {nodes,window}=boot();
+ // IT, job, PC operation, desk work, 30–60 minutes, 3–4 months,
+ // standard difficulty, basic language, digital use, job relevance.
+ const choices=[2,0,4,0,1,1,1,1,1,1];
+ for(const choice of choices){nodes.get('answerGrid').children[choice].listeners.click();nodes.get('nextBtn').listeners.click();}
+ assert.deepEqual(Array.from(window.__lastResult.topTies,q=>q.name),['LinuCレベル1','Python 3 エンジニア認定データ分析試験']);
+ assert.equal(nodes.get('topTieSummary').hidden,false);
+ assert.match(nodes.get('topTieSummary').innerHTML,/Linuxサーバーの基本操作/);
+ assert.match(nodes.get('topTieSummary').innerHTML,/Pythonを使ったデータ分析/);
+ assert.match(nodes.get('topTieSummary').innerHTML,/href="#candidateComparison"/);
+ assert.match(nodes.get('metricScope').textContent,/LinuCレベル1/);
+ assert.match(nodes.get('routeNarrative').innerHTML,/href="study\/itpassport\.html#studySetup"/);
+ assert.match(nodes.get('routeNarrative').innerHTML,/公式教材や試験範囲全体を網羅するものではありません/);
+});
+test('a later non-tied result clears earlier tie cards',()=>{
+ const {nodes,window}=boot();
+ for(const choice of [2,0,4,0,1,1,1,1,1,1]){nodes.get('answerGrid').children[choice].listeners.click();nodes.get('nextBtn').listeners.click();}
+ assert.equal(nodes.get('topTieSummary').hidden,false);
+ nodes.get('restartBtn').listeners.click();
+ for(let i=0;i<10;i++){nodes.get('answerGrid').children[0].listeners.click();nodes.get('nextBtn').listeners.click();}
+ assert.equal(window.__lastResult.topTies.length,1);
+ assert.equal(nodes.get('topTieSummary').hidden,true);
+ assert.equal(nodes.get('topTieSummary').innerHTML,'');
+ assert.equal(nodes.get('metricScope').hidden,true);
 });
 test('matching reasons describe the answer conditions without an aptitude percentage',()=>{
  const {api}=boot();const q=api.qualifications.find(q=>q.name==='日商簿記3級');
