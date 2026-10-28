@@ -289,3 +289,27 @@ test("bookkeeping entries balance and representative calculations keep their exp
   const guide = fs.readFileSync(path.join(root, "qualifications/bookkeeping3.html"), "utf8");
   assert.ok(guide.includes('href="../study/bookkeeping3.html"'));
 });
+
+test("weak-area practice uses unresolved mistakes and preserves interrupted sessions", () => {
+  const bank = require('../assets/study/fp3.js');
+  const state = core.emptyProgress();
+  const life = bank.questions.filter(q => q.area === 'life');
+  const finance = bank.questions.filter(q => q.area === 'finance');
+  assert.equal(core.weakestArea(bank, state), null);
+  assert.equal(core.startSession(state, bank, 'weak', { size: 5 }), false);
+  state.records[life[0].id] = {attempts:1,correct:0,review:true,streak:0};
+  state.records[finance[0].id] = {attempts:1,correct:0,review:true,streak:0};
+  state.records[finance[1].id] = {attempts:2,correct:1,review:true,streak:1};
+  const weak = core.weakestArea(bank, state);
+  assert.equal(weak.area, 'finance'); assert.equal(weak.review, 2); assert.equal(weak.attempts, 3);
+  assert.equal(core.startSession(state, bank, 'weak', {size:5, random:()=>0.4}), true);
+  assert.equal(state.active.ids.length,5);
+  assert.deepEqual(new Set(state.active.ids.slice(0,2)),new Set([finance[0].id,finance[1].id]));
+  assert.ok(state.active.ids.every(id => finance.some(q => q.id === id)));
+  const resumed = core.normalizeProgress(JSON.parse(JSON.stringify(state)), bank, today);
+  assert.equal(resumed.active.mode, 'weak'); assert.deepEqual(resumed.active.ids,state.active.ids);
+  state.records[finance[0].id].review=false; state.records[finance[1].id].review=false;
+  assert.equal(core.weakestArea(bank,state).area,'life');
+  state.records[life[0].id].review=false;
+  assert.equal(core.weakestArea(bank,state),null);
+});

@@ -54,3 +54,30 @@ for(const course of ['world-heritage3','bookkeeping3','english-basics'])test(cou
  assert.equal(d.getElementById('studyFeedback').hidden,false);
  dom.window.close();
 });
+
+test('a wrong FP3 answer enables a focused weak-area session and survives resume',()=>{
+ const dom=setup('fp3'),w=dom.window,d=w.document;
+ assert.equal(d.getElementById('studyWeakStart').disabled,true);
+ d.getElementById('studyDailyStart').click();
+ const saved=JSON.parse(w.localStorage.getItem('qualification-study:v1:fp3'));
+ const bank=require('../assets/study/fp3.js');
+ const first=bank.questions.find(q=>q.id===saved.active.ids[0]);
+ d.querySelectorAll('.study-choice')[(first.answer+1)%4].click();
+ d.getElementById('studyQuit').click();
+ assert.equal(d.getElementById('studyWeakStart').disabled,false);
+ assert.match(d.getElementById('studyWeakInfo').textContent,new RegExp(bank.areas[first.area]));
+ d.getElementById('studyWeakStart').click();
+ const weak=JSON.parse(w.localStorage.getItem('qualification-study:v1:fp3'));
+ assert.equal(weak.active.mode,'weak');assert.equal(weak.active.ids[0],first.id);
+ assert.ok(weak.active.ids.every(id=>bank.questions.find(q=>q.id===id).area===first.area));
+ const restore=new JSDOM(fs.readFileSync(path.join(root,'study/fp3.html'),'utf8'),{url:'https://example.com/study/fp3.html',runScripts:'outside-only'});
+ restore.window.HTMLElement.prototype.scrollIntoView=function(){};
+ restore.window.localStorage.setItem('qualification-study:v1:fp3',JSON.stringify(weak));
+ restore.window.eval(fs.readFileSync(path.join(root,'assets/study/fp3.js'),'utf8'));
+ restore.window.eval(fs.readFileSync(path.join(root,'assets/study.js'),'utf8'));
+ assert.equal(restore.window.document.getElementById('studyResume').hidden,false);
+ restore.window.document.getElementById('studyResume').click();
+ assert.equal(restore.window.document.getElementById('studyQuiz').hidden,false);
+ assert.equal(restore.window.document.getElementById('studyQuestion').textContent,first.question);
+ restore.window.close();dom.window.close();
+});

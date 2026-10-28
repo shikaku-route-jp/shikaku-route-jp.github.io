@@ -41,7 +41,7 @@ jobs:
       - name: Check exam schedule freshness
         run: python scripts/check_exam_dates.py
       - name: Check diagnosis, mobile interactions and idiom practice
-        run: node --test scripts/test_diagnosis.js scripts/test_yoji.js scripts/test_learning_guide.js scripts/test_comparison_analytics.js scripts/test_study.js
+        run: node --test scripts/test_diagnosis.js scripts/test_yoji.js scripts/test_learning_guide.js scripts/test_comparison_analytics.js scripts/test_study.js scripts/test_planner.js
 
   sync:
     needs: validate

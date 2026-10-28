@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#eee9dc">
+  <title>資格の学習計画・費用比較｜無料で試験日から逆算｜資格ルート案内室</title>
+  <meta name="description" content="試験日と目標学習時間から学習ペースを計算。2つの資格の受験料・教材費・講座費なども入力して比較できます。無料・登録不要。">
+  <link rel="canonical" href="https://shikaku-route-jp.github.io/plan.html">
+  <link rel="stylesheet" href="assets/site.css?v=20261020-study-3">
+  <link rel="stylesheet" href="assets/planner.css?v=20261028-1">
+  <script src="assets/planner.js?v=20261028-1" defer></script>
+<!-- site-analytics:start --><script src="/assets/analytics-config.js" defer></script><script src="/assets/analytics.js" defer></script><!-- site-analytics:end -->
+  <!-- shared-site-metadata:start -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:site_name" content="資格ルート案内室">
+  <meta property="og:title" content="資格の学習計画・費用比較｜無料で試験日から逆算｜資格ルート案内室">
+  <meta property="og:description" content="試験日と目標学習時間から学習ペースを計算。2つの資格の受験料・教材費・講座費なども入力して比較できます。無料・登録不要。">
+  <meta property="og:url" content="https://shikaku-route-jp.github.io/plan.html">
+  <meta property="og:image" content="https://shikaku-route-jp.github.io/assets/ogp.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:alt" content="資格ルート診断 — 100資格から10問で候補を整理">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://shikaku-route-jp.github.io/assets/ogp.png">
+  <meta name="twitter:image:alt" content="資格ルート診断 — 100資格から10問で候補を整理">
+  <!-- shared-site-metadata:end -->
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+  <header class="topbar"><div class="wrap topbar-inner"><a class="brand" href="./"><span class="brand-mark">Q</span><span>資格ルート案内室</span></a><nav class="top-links" aria-label="主要メニュー"><a href="./#diagnosis">資格診断</a><a href="study/">無料の資格学習</a><a href="materials/">教材案内</a></nav></div></header>
+  <main id="main" class="planner-page"><div class="wrap">
+    <div class="planner-intro"><p class="section-kicker">STUDY PLANNER / 学習計画と費用</p><h1>目標を決めたら、<br>自分のペースを考えよう。</h1><p>試験日から学習時間を逆算し、候補の費用も比較できます。無料・登録不要。入力はこのブラウザに保存され、別の端末とは共有されません。</p><div class="planner-toc"><a class="btn btn-primary" href="#studyPlan">学習計画を立てる →</a><a class="btn" href="#costCompare">費用を比べる →</a></div><noscript><p>計算にはJavaScriptを有効にしてください。入力内容は自動送信されません。</p></noscript></div>
+    <div class="planner-sections">
+      <section class="planner-section" id="studyPlan" aria-labelledby="planTitle"><p class="section-kicker">01 / STUDY PLAN</p><h2 id="planTitle">試験日から学習計画を立てる</h2><p>目標にしたい時間と、普段確保できる時間を入れてください。試験当日は学習可能時間に含めず、今日から前日までの日数で計算します。</p>
+        <form id="planForm" class="planner-form" novalidate><fieldset id="planFields" disabled><div class="planner-grid">
+          <label>資格・目標の名前（任意）<input name="qualification" type="text" maxlength="50" autocomplete="off" placeholder="例：FP3級"></label>
+          <label>試験予定日<input id="planDate" name="examDate" type="date" required><small>日本時間で明日以降。正式な試験日・予約状況は公式サイトで確認。</small></label>
+          <label>目標の合計学習時間（時間）<input name="targetHours" type="number" min="0.1" max="5000" step="0.1" required inputmode="decimal" placeholder="例：60"><small>自分で決める目安です。合格に必要な時間を保証するものではありません。</small></label>
+          <label>すでに学習した時間（時間）<input name="doneHours" type="number" min="0" max="5000" step="0.1" value="0" required inputmode="decimal"></label>
+          <label>平日1日あたりの予定時間（分）<input name="weekdayMinutes" type="number" min="0" max="1440" step="1" value="30" required inputmode="numeric"><small>月〜金を平日として計算します。祝日は個別に考慮しません。</small></label>
+          <label>土日1日あたりの予定時間（分）<input name="weekendMinutes" type="number" min="0" max="1440" step="1" value="60" required inputmode="numeric"><small>土曜・日曜それぞれに同じ時間を設定します。</small></label>
+        </div><button class="btn btn-primary" type="submit">学習ペースを計算する →</button> <button class="btn" type="button" id="clearPlan">計画の入力を消す</button></fieldset><p class="planner-error" id="planError" role="alert"></p><p class="planner-help" id="planStorage">計算時に入力をこのブラウザへ保存します。</p></form>
+        <div class="planner-result" id="planResult" hidden><h3 id="planResultTitle" tabindex="-1">あなたの学習ペース</h3><dl id="planNumbers"></dl><p id="planSummary"></p><p id="planToday"></p><div id="planStagesBlock" hidden><h4>進め方の例</h4><ol id="planStages"></ol><p class="planner-help">日付を3つに分けた目安です。学習しない日は休み、理解度や受験範囲に合わせて調整してください。</p></div><p class="planner-help">日々の予定や理解度は考慮していません。途中で実際の学習時間を入力し、計算し直して調整できます。</p><p><a href="study/">無料問題で練習する →</a></p></div>
+      </section>
+      <section class="planner-section" id="costCompare" aria-labelledby="costTitle"><p class="section-kicker">02 / COST COMPARISON</p><h2 id="costTitle">2つの資格の費用を比べる</h2><p>受験・受講・教材・交通などの費用を入力すると、入力した項目の合計を比較できます。教材費は送料を含めて入力してください。料金は自動取得しないため、公式情報や販売画面で確認してください。</p>
+        <form id="costForm" class="planner-form" novalidate><fieldset id="costFields" disabled><div class="cost-grid">
+          <div class="cost-card"><h3>候補1</h3><label>資格名（任意）<input name="name1" type="text" maxlength="50" autocomplete="off" placeholder="例：FP3級"></label><label>受験料（円）<input name="exam1" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>教材費・送料込み（円）<input name="books1" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>講座費（円）<input name="course1" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>交通費（円）<input name="travel1" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>その他・登録費など（円）<input name="other1" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label></div>
+          <div class="cost-card"><h3>候補2</h3><label>資格名（任意）<input name="name2" type="text" maxlength="50" autocomplete="off" placeholder="例：簿記3級"></label><label>受験料（円）<input name="exam2" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>教材費・送料込み（円）<input name="books2" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>講座費（円）<input name="course2" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>交通費（円）<input name="travel2" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label><label>その他・登録費など（円）<input name="other2" type="number" min="0" max="10000000" step="1" inputmode="numeric" placeholder="未入力"></label></div>
+        </div><button class="btn btn-primary" type="submit">入力した費用を比べる →</button> <button class="btn" type="button" id="clearCost">費用の入力を消す</button></fieldset><p class="planner-error" id="costError" role="alert"></p><p class="planner-help" id="costStorage">計算時に入力をこのブラウザへ保存します。費用がかからない項目は0と入力してください。</p></form>
+        <div class="planner-result" id="costResult" hidden><h3 id="costResultTitle" tabindex="-1">入力した費用の比較</h3><dl id="costNumbers"></dl><p id="costSummary"></p><p class="planner-help">未入力の項目は合計に含みません。割引・再受験・合格後の登録更新費なども必要に応じて確認してください。</p><p><a href="materials/">教材を選ぶ際の確認ポイントを見る →</a></p></div>
+      </section>
+    </div>
+    <div class="planner-bottom"><h2>次の一歩</h2><p><a href="study/">無料の資格学習へ →</a>　<a href="./#diagnosis">10問の資格診断へ →</a>　<a href="qualifications/">資格別の公式情報を見る →</a></p><p class="planner-help">学習時間・費用は入力した条件に基づく参考値です。結果は合格や支出を保証しません。</p></div>
+  </div></main>
+  <footer class="footer"><div class="wrap"><nav class="footer-links" aria-label="サイト情報"><a href="study/">無料の資格学習</a><a href="materials/">教材案内</a><a href="about.html">運営者情報</a><a href="privacy.html">プライバシーポリシー</a><a href="advertising.html">広告掲載ポリシー</a></nav><small>資格ルート案内室の学習補助ツールです。</small></div></footer>
+</body>
+</html>

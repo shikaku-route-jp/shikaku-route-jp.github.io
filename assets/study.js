@@ -1,7 +1,7 @@
 (function (root) {
   "use strict";
   const DAY_LIMIT = 7;
-  const MODES = new Set(["daily", "random", "review"]);
+  const MODES = new Set(["daily", "random", "review", "weak"]);
   const object = value => value && typeof value === "object" && !Array.isArray(value);
   const integer = value => Number.isInteger(value) && value >= 0;
   function dayKey(date = new Date()) {
@@ -62,9 +62,27 @@
     }
     return result;
   }
+  function weakestArea(course, progress) {
+    const areas = Object.keys(course.areas).map(area => {
+      const questions = course.questions.filter(q => q.area === area);
+      return { area, review: questions.filter(q => progress.records[q.id]?.review).length,
+        attempts: questions.reduce((sum, q) => sum + (progress.records[q.id]?.attempts || 0), 0),
+        correct: questions.reduce((sum, q) => sum + (progress.records[q.id]?.correct || 0), 0) };
+    }).filter(item => item.review > 0);
+    areas.sort((a, b) => b.review - a.review || (a.correct / a.attempts) - (b.correct / b.attempts));
+    return areas[0] || null;
+  }
   function pickQuestions(course, progress, mode, { area = "all", size = 5, today = dayKey(), random = Math.random } = {}) {
     if (!MODES.has(mode)) return [];
     if (mode === "daily") return dailyQuestions(course, today);
+    if (mode === "weak") {
+      const weakness = weakestArea(course, progress);
+      if (!weakness) return [];
+      const pool = course.questions.filter(q => q.area === weakness.area);
+      const count = integer(size) && size > 0 ? Math.min(size, pool.length) : Math.min(5, pool.length);
+      return [...shuffled(pool.filter(q => progress.records[q.id]?.review), random),
+        ...shuffled(pool.filter(q => !progress.records[q.id]?.review), random)].slice(0, count);
+    }
     const pool = course.questions.filter(q => (mode === "review" ? progress.records[q.id]?.review : area === "all" || q.area === area));
     const count = integer(size) && size > 0 ? Math.min(size, pool.length) : Math.min(5, pool.length);
     return shuffled(pool, random).slice(0, count);
@@ -103,7 +121,7 @@
       review: course.questions.filter(q => progress.records[q.id]?.review).length,
       daily: dailyQuestions(course, today).filter(q => answered.has(q.id)).length };
   }
-  const api = { dayKey, emptyProgress, normalizeProgress, dailyQuestions, pickQuestions, startSession, answerSession, advanceSession, stats };
+  const api = { dayKey, emptyProgress, normalizeProgress, dailyQuestions, weakestArea, pickQuestions, startSession, answerSession, advanceSession, stats };
   if (typeof module === "object" && module.exports) module.exports = api;
   root.QualificationStudyCore = api;
   if (typeof document === "undefined") return;
@@ -114,7 +132,7 @@
   const storageKey = "qualification-study:v1:" + course.id;
   const get = id => document.getElementById(id);
   const byId = new Map(course.questions.map(q => [q.id, q]));
-  const labels = { daily: "今日の5問", random: "分野別・ランダム", review: "間違い復習" };
+  const labels = { daily: "今日の5問", random: "分野別・ランダム", review: "間違い復習", weak: "苦手分野の練習" };
   let progress = emptyProgress();
   let storageWorks = true;
   try { progress = normalizeProgress(JSON.parse(root.localStorage.getItem(storageKey)), course); }
@@ -184,6 +202,14 @@
   }
   function dashboard() {
     const count = stats(progress, course);
+    const weakness = weakestArea(course, progress);
+    const weakButton = get("studyWeakStart"), weakInfo = get("studyWeakInfo");
+    if (weakButton && weakInfo) {
+      weakButton.disabled = !weakness;
+      weakInfo.textContent = weakness
+        ? `優先分野：${course.areas[weakness.area]}（復習待ち${weakness.review}問・この分野の回答${weakness.attempts}回）。復習待ちを優先し、同じ分野から最大5問出します。`
+        : "まだ苦手分野はありません。間違えた問題が復習待ちになると、その分野を練習できます。";
+    }
     get("studySeen").textContent = count.seen;
     get("studyReviewCount").textContent = count.review;
     get("studyDailyCount").textContent = count.daily;
@@ -259,7 +285,7 @@
     const today = dayKey();
     if (mode === "daily" && progress.active?.mode === "daily"
       && progress.active.ids.join() === dailyQuestions(course, today).map(q => q.id).join()) { renderQuestion(); return; }
-    if (startSession(progress, course, mode, { area: get("studyArea").value, size: Number(get("studySize").value), today })) {
+    if (startSession(progress, course, mode, { area: get("studyArea").value, size: mode === "weak" ? 5 : Number(get("studySize").value), today })) {
       trackStudy("study_start", progress.active); save(); renderQuestion();
     }
   }
@@ -290,6 +316,7 @@
   });
   get("studyDailyStart").addEventListener("click", () => begin("daily"));
   get("studyRandomStart").addEventListener("click", () => begin("random"));
+  get("studyWeakStart")?.addEventListener("click", () => begin("weak"));
   for (const id of ["studyReviewStart", "studyResultReview"]) get(id).addEventListener("click", () => {
     if (startSession(progress, course, "review", { size: 5 })) { trackStudy("study_start", progress.active); save(); renderQuestion(); }
   });
