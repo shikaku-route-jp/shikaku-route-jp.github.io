@@ -72,6 +72,9 @@ test("free practice appears only for a published matching course and clears on a
   assert.equal(elements.get("studyPracticeOffer").hidden, false);
   assert.equal(elements.get("studyPracticeLink").href, "study/itpassport.html#studySetup");
   api.render({ name: "FP3級", category: "finance", level: 1 }, "job");
+  assert.equal(elements.get("studyPracticeOffer").hidden, false);
+  assert.equal(elements.get("studyPracticeLink").href, "study/fp3.html#studySetup");
+  api.render({ name: "宅建", category: "legal", level: 2 }, "job");
   assert.equal(elements.get("studyPracticeOffer").hidden, true);
 });
 

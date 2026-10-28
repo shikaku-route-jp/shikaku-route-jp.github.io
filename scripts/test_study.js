@@ -16,7 +16,6 @@ test("every published course has a matching bank, page, source and valid questio
     assert.equal(bank.id, entry.id);
     assert.equal(bank.name, entry.name);
     assert.equal(bank.questions.length, entry.count);
-    assert.equal(bank.questions.length, 100);
     assert.equal(new Set(bank.questions.map(q => (q.example || "") + q.question)).size, entry.count);
     assert.equal(new Set(bank.questions.map(q => q.id)).size, entry.count);
     assert.ok(fs.existsSync(path.join(root, entry.href)));
@@ -37,19 +36,19 @@ test("every published course has a matching bank, page, source and valid questio
   }
 });
 
-test("all 100 questions can be completed and saved in each course", () => {
+test("all questions can be completed and saved in each course", () => {
   for (const entry of catalog) {
     const bank = require(path.join(root, "assets/study", entry.id + ".js"));
     const state = core.emptyProgress();
-    assert.equal(core.startSession(state, bank, "random", { size: 100 }), true);
-    for (let i = 0; i < 100; i++) {
+    assert.equal(core.startSession(state, bank, "random", { size: entry.count }), true);
+    for (let i = 0; i < entry.count; i++) {
       const q = bank.questions.find(q => q.id === state.active.ids[state.active.position]);
       assert.equal(core.answerSession(state, bank, q.answer, today), true);
-      assert.equal(core.advanceSession(state), i < 99);
+      assert.equal(core.advanceSession(state), i < entry.count - 1);
     }
-    assert.equal(state.active.results.filter(r => r.correct).length, 100);
+    assert.equal(state.active.results.filter(r => r.correct).length, entry.count);
     const saved = core.normalizeProgress(JSON.parse(JSON.stringify(state)), bank, today);
-    assert.equal(core.stats(saved, bank, today).seen, 100);
+    assert.equal(core.stats(saved, bank, today).seen, entry.count);
     assert.equal(core.stats(saved, bank, today).review, 0);
   }
 });
@@ -104,7 +103,7 @@ test("study pages stay within the owned-code size budget and load only their own
   }
 });
 
-for (const id of ["world-heritage3", "eiken-pre2", "bookkeeping3"]) {
+for (const id of ["world-heritage3", "eiken-pre2", "bookkeeping3", "fp3"]) {
   test(id + " supports balanced daily practice, area practice, resume and review", () => {
     const bank = require(path.join(root, "assets/study", id + ".js"));
     const state = core.emptyProgress();

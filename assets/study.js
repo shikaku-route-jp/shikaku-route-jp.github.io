@@ -119,6 +119,14 @@
   let storageWorks = true;
   try { progress = normalizeProgress(JSON.parse(root.localStorage.getItem(storageKey)), course); }
   catch { storageWorks = false; }
+  function trackStudy(name, session) {
+    const params = { channel: session.mode, count: session.ids.length };
+    if (root.SiteAnalytics) root.SiteAnalytics.track(name, params);
+    else {
+      root.QualificationPendingAnalytics ||= [];
+      if (root.QualificationPendingAnalytics.length < 20) root.QualificationPendingAnalytics.push({ name, params });
+    }
+  }
   function node(tag, text, className) {
     const item = document.createElement(tag);
     if (text !== undefined) item.textContent = text;
@@ -252,7 +260,7 @@
     if (mode === "daily" && progress.active?.mode === "daily"
       && progress.active.ids.join() === dailyQuestions(course, today).map(q => q.id).join()) { renderQuestion(); return; }
     if (startSession(progress, course, mode, { area: get("studyArea").value, size: Number(get("studySize").value), today })) {
-      save(); renderQuestion();
+      trackStudy("study_start", progress.active); save(); renderQuestion();
     }
   }
   function complete() {
@@ -272,6 +280,7 @@
       if (lesson) detail.append(lesson);
       list.append(detail);
     }
+    trackStudy("study_complete", session);
     progress.active = null;
     save(); show("studyResult", "studyResultTitle");
   }
@@ -282,7 +291,7 @@
   get("studyDailyStart").addEventListener("click", () => begin("daily"));
   get("studyRandomStart").addEventListener("click", () => begin("random"));
   for (const id of ["studyReviewStart", "studyResultReview"]) get(id).addEventListener("click", () => {
-    if (startSession(progress, course, "review", { size: 5 })) { save(); renderQuestion(); }
+    if (startSession(progress, course, "review", { size: 5 })) { trackStudy("study_start", progress.active); save(); renderQuestion(); }
   });
   get("studyResume").addEventListener("click", () => renderQuestion());
   get("studyNext").addEventListener("click", () => {

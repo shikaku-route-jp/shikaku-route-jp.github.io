@@ -2,7 +2,7 @@
   "use strict";
   const id = window.SITE_ANALYTICS_CONFIG?.measurementId || "";
   const enabled = /^G-[A-Z0-9]+$/.test(id) && !["1", "yes"].includes(navigator.doNotTrack) && navigator.globalPrivacyControl !== true;
-  const allowed = new Set(["diagnosis_start", "diagnosis_step", "diagnosis_complete", "diagnosis_restart", "candidate_compare", "materials_open", "affiliate_click", "result_share", "practice_open"]);
+  const allowed = new Set(["diagnosis_start", "diagnosis_step", "diagnosis_complete", "diagnosis_restart", "candidate_compare", "materials_open", "materials_search", "affiliate_click", "result_share", "practice_open", "study_start", "study_complete"]);
   let started = false;
   function track(name, params = {}) {
     if (!allowed.has(name)) return;
@@ -37,4 +37,11 @@
     if (["af.moshimo.com", "px.a8.net"].includes(url.hostname)) track("affiliate_click", {destination: url.hostname === "af.moshimo.com" ? "rakuten" : "freee_wiz"});
   });
   window.SiteAnalytics = {track, enabled};
+  // Study UI can be usable while the deferred analytics script is still loading.
+  // The queue contains only a bounded mode and a question count, never answers.
+  const pending = Array.isArray(window.QualificationPendingAnalytics) ? window.QualificationPendingAnalytics : [];
+  delete window.QualificationPendingAnalytics;
+  pending.forEach(event => {
+    if (["study_start", "study_complete"].includes(event?.name)) track(event.name, event.params);
+  });
 })();

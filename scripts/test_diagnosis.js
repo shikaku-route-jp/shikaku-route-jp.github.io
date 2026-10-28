@@ -103,6 +103,17 @@ test('official links cover every qualification and broad qualification groups ar
  assert.match(api.renderExamInfo({name:'医療事務'}),/実施団体の例/);
  assert.match(api.renderExamInfo({name:'税理士'}),/公式情報/);
 });
+test('past fixed exam dates are not shown as upcoming and CBT labels do not expire monthly',()=>{
+ const {api}=boot();
+ const fp=api.qualifications.find(q=>q.name==='FP3級');
+ const fixed=api.qualifications.find(q=>q.name==='行政書士');
+ assert.match(api.directoryMarkup([fp],'2026-11-01'),/CBT：休止期間を除き実施/);
+ assert.doesNotMatch(api.directoryMarkup([fp],'2026-11-01'),/10月31日/);
+ assert.match(api.directoryMarkup([fixed],'2026-11-08'),/2026年11月8日/);
+ assert.match(api.directoryMarkup([fixed],'2026-11-09'),/日程は終了/);
+ assert.match(api.renderExamInfo(fixed,'2026-11-09'),/公表済みの日程（終了）/);
+ assert.match(api.renderExamInfo(fixed,'2026-11-09'),/次回日程は公式サイト/);
+});
 test('valid answers always yield finite ordered scores without mutating caller answers',()=>{
  const {api}=boot();let seed=12345;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/2**32};
  for(let n=0;n<500;n++){

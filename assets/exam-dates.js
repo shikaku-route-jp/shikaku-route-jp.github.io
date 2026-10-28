@@ -48,19 +48,19 @@
     },
     "FP2級": {
       type: "cbt",
-      label: "CBT：2026年10月1日〜10月31日",
+      label: "CBT：休止期間を除き実施",
       application: "空いているテストセンターの日時から選択",
-      note: "11月も1日〜30日に実施。休止期間を除きCBTで受検できます。",
+      note: "実施期間・休止日と会場の空席は公式情報で確認してください。",
       url: "https://www.jafp.or.jp/exam/schedule/index.shtml",
-      verified: "2026-10-05"
+      verified: "2026-10-28"
     },
     "FP3級": {
       type: "cbt",
-      label: "CBT：2026年10月1日〜10月31日",
+      label: "CBT：休止期間を除き実施",
       application: "空いているテストセンターの日時から選択",
-      note: "11月も1日〜30日に実施。休止期間を除きCBTで受検できます。",
+      note: "実施期間・休止日と会場の空席は公式情報で確認してください。",
       url: "https://www.jafp.or.jp/exam/schedule/index.shtml",
-      verified: "2026-10-05"
+      verified: "2026-10-28"
     },
     "ITパスポート": {
       type: "cbt",

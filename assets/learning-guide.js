@@ -94,7 +94,6 @@
     officialLink.textContent = `${main.name}の公式情報・出題範囲を確認する →`;
     document.getElementById("learningTip").textContent = guide.tip;
     document.getElementById("materialKeyword").value = guide.keyword;
-    document.getElementById("materialDirectSearch").href = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(guide.keyword)}/`;
     document.getElementById("materialCopyStatus").textContent = "";
 
     const articles = document.getElementById("learningArticles");
@@ -127,6 +126,15 @@
       }
     });
   }
+
+  // Keep the selected qualification out of GA4's automatic outbound-link URL.
+  // The search term is sent to Rakuten only after the visitor chooses to search.
+  const searchButton = document.getElementById("materialDirectSearch");
+  if (searchButton) searchButton.addEventListener("click", () => {
+    const keyword = document.getElementById("materialKeyword").value;
+    window.SiteAnalytics?.track("materials_search", { destination: "rakuten_search" });
+    window.open(`https://search.rakuten.co.jp/search/mall/${encodeURIComponent(keyword)}/`, "_blank", "noopener,noreferrer");
+  });
 
   window.QualificationLearningGuide = { build, render };
 })();
