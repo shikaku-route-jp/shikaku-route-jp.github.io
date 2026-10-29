@@ -1,7 +1,7 @@
 (function (root) {
   "use strict";
   const DAY_LIMIT = 7;
-  const MODES = new Set(["daily", "random", "review", "weak"]);
+  const MODES = new Set(["daily", "random", "review", "weak", "unseen"]);
   const object = value => value && typeof value === "object" && !Array.isArray(value);
   const integer = value => Number.isInteger(value) && value >= 0;
   function dayKey(date = new Date()) {
@@ -83,7 +83,11 @@
       return [...shuffled(pool.filter(q => progress.records[q.id]?.review), random),
         ...shuffled(pool.filter(q => !progress.records[q.id]?.review), random)].slice(0, count);
     }
-    const pool = course.questions.filter(q => (mode === "review" ? progress.records[q.id]?.review : area === "all" || q.area === area));
+    const pool = course.questions.filter(q => {
+      if (mode === "review") return progress.records[q.id]?.review;
+      if (mode === "unseen") return !(progress.records[q.id]?.attempts > 0);
+      return area === "all" || q.area === area;
+    });
     const count = integer(size) && size > 0 ? Math.min(size, pool.length) : Math.min(5, pool.length);
     return shuffled(pool, random).slice(0, count);
   }
@@ -132,7 +136,7 @@
   const storageKey = "qualification-study:v1:" + course.id;
   const get = id => document.getElementById(id);
   const byId = new Map(course.questions.map(q => [q.id, q]));
-  const labels = { daily: "今日の5問", random: "分野別・ランダム", review: "間違い復習", weak: "苦手分野の練習" };
+  const labels = { daily: "今日の5問", random: "分野別・ランダム", review: "間違い復習", weak: "苦手分野の練習", unseen: "まだ解いていない問題" };
   let progress = emptyProgress();
   let storageWorks = true;
   try { progress = normalizeProgress(JSON.parse(root.localStorage.getItem(storageKey)), course); }
@@ -214,6 +218,13 @@
     get("studyReviewCount").textContent = count.review;
     get("studyDailyCount").textContent = count.daily;
     get("studyDailyStart").textContent = count.daily === Math.min(5, course.questions.length) ? "今日の5問をもう一度 →" : "今日の5問を始める →";
+    const unseen = course.questions.length - count.seen;
+    for (const id of ["studyUnseenStart", "studyResultUnseen"]) {
+      const button = get(id);
+      if (!button) continue;
+      button.disabled = unseen === 0;
+      button.textContent = unseen ? `まだ解いていない問題（残り${unseen}問から最大5問）` : "未学習の問題はありません";
+    }
     for (const id of ["studyReviewStart", "studyResultReview"]) {
       get(id).disabled = count.review === 0;
       get(id).textContent = count.review ? `間違い復習（${count.review}問から最大5問）` : "復習する問題はまだありません";
@@ -285,7 +296,7 @@
     const today = dayKey();
     if (mode === "daily" && progress.active?.mode === "daily"
       && progress.active.ids.join() === dailyQuestions(course, today).map(q => q.id).join()) { renderQuestion(); return; }
-    if (startSession(progress, course, mode, { area: get("studyArea").value, size: mode === "weak" ? 5 : Number(get("studySize").value), today })) {
+    if (startSession(progress, course, mode, { area: get("studyArea").value, size: mode === "weak" || mode === "unseen" ? 5 : Number(get("studySize").value), today })) {
       trackStudy("study_start", progress.active); save(); renderQuestion();
     }
   }
@@ -303,6 +314,8 @@
         node("p", (q.example ? q.example + " " : "") + q.question), node("p", "選んだ回答：" + q.choices[result.choice]),
         node("p", "正解：" + q.choices[q.answer]), node("p", q.explanation));
       const lesson = lessonLink(q);
+      const source = sourceLink(q);
+      if (source) detail.append(source);
       if (lesson) detail.append(lesson);
       list.append(detail);
     }
@@ -317,6 +330,7 @@
   get("studyDailyStart").addEventListener("click", () => begin("daily"));
   get("studyRandomStart").addEventListener("click", () => begin("random"));
   get("studyWeakStart")?.addEventListener("click", () => begin("weak"));
+  for (const id of ["studyUnseenStart", "studyResultUnseen"]) get(id)?.addEventListener("click", () => begin("unseen"));
   for (const id of ["studyReviewStart", "studyResultReview"]) get(id).addEventListener("click", () => {
     if (startSession(progress, course, "review", { size: 5 })) { trackStudy("study_start", progress.active); save(); renderQuestion(); }
   });

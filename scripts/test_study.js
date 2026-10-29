@@ -160,6 +160,48 @@ test("selected area and actual pool limit session size without repeats", () => {
   assert.equal(core.startSession(state, course, "review"), false);
 });
 
+test("unseen practice excludes previously answered questions, resumes, and stops when exhausted", () => {
+  const bank = require("../assets/study/takken.js");
+  const state = core.emptyProgress();
+  for (const q of bank.questions.slice(0, 47)) state.records[q.id] = { attempts: 1, correct: 1, review: false, streak: 1 };
+  const remaining = new Set(bank.questions.slice(47).map(q => q.id));
+  assert.equal(core.startSession(state, bank, "unseen", { size: 5, random: () => 0.5 }), true);
+  assert.equal(state.active.ids.length, 3);
+  assert.deepEqual(new Set(state.active.ids), remaining);
+  const first = bank.questions.find(q => q.id === state.active.ids[0]);
+  assert.equal(core.answerSession(state, bank, first.answer, today), true);
+  const restored = core.normalizeProgress(JSON.parse(JSON.stringify(state)), bank, today);
+  assert.equal(restored.active.mode, "unseen");
+  assert.equal(restored.records[first.id].attempts, 1);
+  assert.equal(core.advanceSession(restored), true);
+  assert.equal(restored.active.position, 1);
+  for (const q of bank.questions) restored.records[q.id] = { attempts: 1, correct: 1, review: false, streak: 1 };
+  assert.deepEqual(core.pickQuestions(bank, restored, "unseen", { size: 5 }), []);
+  assert.equal(core.startSession(restored, bank, "unseen", { size: 5 }), false);
+});
+
+test("takken has reviewed, sourced questions in the intended areas and checked example answers", () => {
+  const bank = require("../assets/study/takken.js");
+  const count = area => bank.questions.filter(q => q.area === area).length;
+  assert.deepEqual(Object.keys(bank.areas).map(count), [18, 15, 10, 7]);
+  assert.equal(bank.reviewed, "2026-10-29");
+  assert.ok(bank.questions.every(q => q.source && q.source.startsWith("https://")));
+  const expected = {
+    "one-prefecture": "東京都知事", "two-prefectures": "国土交通大臣の免許",
+    "show-card": "相手方の請求がなくても提示する", "contract-document": "37条",
+    "coverage-calc": "120㎡", "floor-ratio-calc": "360㎡", "road-width-limit": "160％",
+    "fixed-january": "毎年１月１日", "registration-tax": "登録免許税"
+  };
+  for (const [id, answer] of Object.entries(expected)) {
+    const q = bank.questions.find(item => item.id === id);
+    assert.ok(q, id);
+    assert.equal(q.choices[q.answer], answer, id);
+  }
+  const positions = [0, 0, 0, 0];
+  for (const q of bank.questions) positions[q.answer]++;
+  assert.ok(positions.every(n => n >= 8), "correct choices must not cluster in one position");
+});
+
 test("a wrong answer enters review, two consecutive correct attempts remove it", () => {
   const state = core.emptyProgress();
   core.startSession(state, course, "daily", { today });
