@@ -159,6 +159,27 @@ test("advertiser destination and affiliate identity are preserved with accurate 
   assert.match(html, /href="#rakuten-books"/);
 });
 
+test("main navigation comes before ad slots and each vendor loads once", () => {
+  const at = marker => {
+    const position = html.indexOf(marker);
+    assert.notEqual(position, -1, `missing: ${marker}`);
+    return position;
+  };
+  const positions = [
+    'id="result"', 'class="study-callout"', 'class="articles-callout"',
+    'id="siteAdSlot"', 'id="qualificationList"', 'id="rakutenWidgetSlot"', '</main>'
+  ].map(at);
+  for (let i = 1; i < positions.length; i++) {
+    assert.ok(positions[i - 1] < positions[i], "main content or ad slots are out of order");
+  }
+  for (const marker of ['id="siteAdSlot"', 'id="rakutenWidgetSlot"',
+    'id="siteAdPayload"', 'id="rakutenWidgetPayload"',
+    'https://adm.shinobi.jp/o/e9902be8e72218e27d6e6d8d6955455b',
+    'https://dn.msmstatic.com/site/rakuten/widget.js']) {
+    assert.equal(html.split(marker).length - 1, 1, `${marker} must occur once`);
+  }
+});
+
 test("FP3 product card loads once, only for the matching result", () => {
   const { api, elements } = environment();
   let mounts = 0;
