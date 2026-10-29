@@ -8,7 +8,7 @@ import json
 import struct
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
-from site_common import BASE, Page, content_pages, page_url, canonical_url
+from site_common import BASE, Page, content_pages, page_url, canonical_url, ADSENSE_ACCOUNT, adsense_page_enabled
 from generate_metadata import JST, modified_day
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -147,6 +147,15 @@ if not static_directory or static_directory[1].count('class="qualification-card"
 for path, page in content_pages(include_noindex=True):
     rel = path.relative_to(ROOT); url = page_url(path)
     canonical = canonical_url(path, page)
+    source = path.read_text(encoding='utf-8')
+    head = re.search(r'<head\b[^>]*>(.*?)</head\s*>', source, flags=re.I | re.S)
+    head = head[1] if head else ''
+    account_tags = re.findall(r'<meta\b[^>]*\bname\s*=\s*["\']google-adsense-account["\'][^>]*>', head, flags=re.I)
+    if len(account_tags) != 1 or page.meta.get('google-adsense-account') != ADSENSE_ACCOUNT:
+        errors.append(f'{rel}: one matching AdSense verification meta tag is required')
+    ad_tags = [tag for tag in re.findall(r'<script\b[^>]*>', head, flags=re.I) if 'adsbygoogle.js' in tag]
+    if adsense_page_enabled(path, page) and (len(ad_tags) != 1 or 'client='+ADSENSE_ACCOUNT not in ad_tags[0]):
+        errors.append(f'{rel}: one matching AdSense loader is required')
     if page.canonicals != [canonical]: errors.append(f"{rel}: canonical must match its page or migration destination ({canonical})")
     if page.meta.get("og:url") != canonical: errors.append(f"{rel}: og:url does not match canonical")
     if page.refresh_target:
@@ -191,6 +200,7 @@ if png[:8]!=b"\x89PNG\r\n\x1a\n" or struct.unpack(">II",png[16:24])!=(1200,630):
 ads=(ROOT/"ads.txt").read_text()
 if "ca-pub-5008692598953577" in home:
     if "google.com, pub-5008692598953577, DIRECT, f08c47fec0942fa0" not in ads:errors.append("AdSense publisher missing from ads.txt")
+    if ads.splitlines().count("google.com, pub-5008692598953577, DIRECT, f08c47fec0942fa0") != 1:errors.append("AdSense publisher must appear once in ads.txt")
     for policy in ("privacy.html","advertising.html"):
         if "Google AdSense" not in (ROOT/policy).read_text():errors.append(f"{policy}: AdSense disclosure missing")
 

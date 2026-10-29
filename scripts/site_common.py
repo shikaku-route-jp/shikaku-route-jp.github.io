@@ -7,6 +7,14 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 BASE = 'https://shikaku-route-jp.github.io'
 LEGACY = {'qualification-route', 'qualification-route-affiliate-updated'}
+ADSENSE_ACCOUNT = 'ca-pub-5008692598953577'
+ADSENSE_SCRIPT = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+ADSENSE_ACCOUNT+'" crossorigin="anonymous"></script>'
+ADSENSE_EXCLUDED = {'404.html', 'about.html', 'advertising.html', 'contact.html', 'privacy.html'}
+
+def adsense_page_enabled(path, page):
+    """Load ads on content pages, not on utility or unfinished pages."""
+    return (path.relative_to(ROOT).as_posix() not in ADSENSE_EXCLUDED
+            and 'noindex' not in page.meta.get('robots', '').lower())
 
 class Page(HTMLParser):
     def __init__(self, text):

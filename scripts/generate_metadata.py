@@ -11,7 +11,8 @@ from pathlib import Path
 import re
 import subprocess
 import xml.etree.ElementTree as ET
-from site_common import ROOT, BASE, Page, content_pages, page_url, canonical_url
+from site_common import (ROOT, BASE, Page, content_pages, page_url, canonical_url,
+                         ADSENSE_ACCOUNT, ADSENSE_SCRIPT, adsense_page_enabled)
 
 JST = timezone(timedelta(hours=9))
 IMAGE = BASE + '/assets/ogp.png'
@@ -59,8 +60,24 @@ def replace_meta(text, key, value, prop=False):
     attr = 'property' if prop else 'name'
     return text.replace('</head>', f'  <meta {attr}="{key}" content="{html.escape(value, quote=True)}">\n</head>')
 
+def ensure_adsense_tags(text, path, page):
+    """Keep site verification and the ad loader present as pages are regenerated."""
+    match = re.search(r'<head\b[^>]*>.*?</head\s*>', text, flags=re.S | re.I)
+    if not match:
+        raise ValueError(f'{path}: missing head element')
+    head = match.group(0)
+    additions = []
+    if not re.search(r'<meta\b[^>]*\bname\s*=\s*["\']google-adsense-account["\']', head, flags=re.I):
+        additions.append(f'<meta name="google-adsense-account" content="{ADSENSE_ACCOUNT}">')
+    if adsense_page_enabled(path, page) and not re.search(r'<script\b[^>]*adsbygoogle\.js', head, flags=re.I):
+        additions.append(ADSENSE_SCRIPT)
+    if additions:
+        text = re.sub(r'(<head\b[^>]*>)', lambda m: m[1]+'\n  '+'\n  '.join(additions), text, count=1, flags=re.I)
+    return text
+
 def render(path, page, published):
     text = path.read_text(encoding='utf-8'); url = canonical_url(path, page)
+    text = ensure_adsense_tags(text, path, page)
     # Rebuild one bounded block so a second generation is byte-for-byte identical.
     text = re.sub(r'\s*<!-- shared-site-metadata:start -->.*?<!-- shared-site-metadata:end -->', '', text, flags=re.S)
     text = re.sub(r'\s*<!-- site-analytics:start -->.*?<!-- site-analytics:end -->', '', text, flags=re.S)
