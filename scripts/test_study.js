@@ -69,6 +69,26 @@ test("records and unfinished sessions from the original banks survive expansion"
   }
 });
 
+test("world heritage expansion preserves saved progress and the all-questions option includes the full bank", () => {
+  const bank = require("../assets/study/world-heritage3.js");
+  const page = fs.readFileSync(path.join(root, "study/world-heritage3.html"), "utf8");
+  assert.deepEqual(Object.fromEntries(Object.keys(bank.areas).map(area =>
+    [area, bank.questions.filter(question => question.area === area).length])),
+    { basics: 30, japan: 60, world: 60 });
+
+  const old = { version: 1, records: { himeji: { attempts: 2, correct: 1, review: true, streak: 1 } },
+    daily: { [today]: ["himeji"] },
+    active: { mode: "random", bankVersion: 1, ids: ["heritage-purpose", "himeji"], position: 1,
+      results: [{ id: "heritage-purpose", choice: 1, correct: true }] } };
+  const restored = core.normalizeProgress(old, bank, today);
+  assert.deepEqual(restored.records.himeji, old.records.himeji);
+  assert.deepEqual(restored.active, old.active);
+  assert.deepEqual(restored.daily, old.daily);
+  const allOption = page.match(/<option value="(\d+)">選んだ分野の全問<\/option>/);
+  assert.ok(allOption);
+  assert.equal(core.pickQuestions(bank, restored, "random", { area: "all", size: Number(allOption[1]) }).length, 150);
+});
+
 test("study ads load once per page, after core UI, outside answer panels", () => {
   const pages = ["study/index.html", ...catalog.map(c => c.href)];
   for (const name of pages) {
@@ -355,3 +375,4 @@ test("weak-area practice uses unresolved mistakes and preserves interrupted sess
   state.records[life[0].id].review=false;
   assert.equal(core.weakestArea(bank,state),null);
 });
+
