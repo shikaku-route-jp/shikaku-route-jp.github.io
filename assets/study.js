@@ -20,7 +20,7 @@
     for (const char of text) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619);
     return () => { seed = Math.imul(1664525, seed) + 1013904223 | 0; return (seed >>> 0) / 4294967296; };
   }
-  function emptyProgress() { return { version: 1, records: {}, daily: {}, active: null }; }
+  function emptyProgress() { return { version: 1, records: {}, daily: {}, dailyResults: {}, active: null }; }
   function normalizeProgress(raw, course, today = dayKey()) {
     const value = object(raw) && raw.version === 1 ? raw : {};
     const state = emptyProgress();
@@ -33,6 +33,12 @@
     if (object(value.daily)) {
       for (const day of Object.keys(value.daily).filter(day => /^\d{4}-\d{2}-\d{2}$/.test(day) && day <= today).sort().slice(-DAY_LIMIT)) {
         if (Array.isArray(value.daily[day])) state.daily[day] = [...new Set(value.daily[day].filter(id => questions.has(id)))];
+      }
+    }
+    if (object(value.dailyResults)) {
+      for (const day of Object.keys(value.dailyResults).filter(day => /^\d{4}-\d{2}-\d{2}$/.test(day) && day <= today).sort().slice(-DAY_LIMIT)) {
+        const results = value.dailyResults[day];
+        if (object(results)) state.dailyResults[day] = Object.fromEntries(Object.entries(results).filter(([id, correct]) => questions.has(id) && typeof correct === "boolean"));
       }
     }
     const active = value.active;
@@ -109,7 +115,8 @@
     else { record.review = true; record.streak = 0; }
     progress.records[question.id] = record;
     progress.daily[today] = [...new Set([...(progress.daily[today] || []), question.id])];
-    for (const day of Object.keys(progress.daily).sort().slice(0, -DAY_LIMIT)) delete progress.daily[day];
+    progress.dailyResults[today] = { ...(progress.dailyResults[today] || {}), [question.id]: correct };
+    for (const day of Object.keys(progress.daily).sort().slice(0, -DAY_LIMIT)) { delete progress.daily[day]; delete progress.dailyResults[day]; }
     session.results.push({ id: question.id, choice, correct });
     return true;
   }
