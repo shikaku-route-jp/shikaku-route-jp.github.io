@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#eee9dc">
+  <title>学習マイページ｜資格ルート案内室</title>
+  <meta name="description" content="資格ルートの診断結果を保存し、無料学習の進捗をブラウザで確認できます。">
+  <link rel="canonical" href="https://shikaku-route-jp.github.io/dashboard.html">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/dashboard.css">
+  <script src="assets/study-catalog.js" defer></script>
+  <script src="assets/dashboard.js" defer></script>
+  <!-- site-analytics:start --><script src="/assets/analytics-config.js" defer></script><script src="/assets/analytics.js" defer></script><!-- site-analytics:end -->
+  <!-- shared-site-metadata:start -->
+  <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta property="og:type" content="website"><meta property="og:locale" content="ja_JP"><meta property="og:site_name" content="資格ルート案内室">
+  <meta property="og:title" content="学習マイページ｜資格ルート案内室"><meta property="og:description" content="診断結果と学習の記録をブラウザに保存。"><meta property="og:url" content="https://shikaku-route-jp.github.io/dashboard.html">
+  <meta property="og:image" content="https://shikaku-route-jp.github.io/assets/ogp.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://shikaku-route-jp.github.io/assets/ogp.png">
+  <!-- shared-site-metadata:end -->
+</head>
+<body>
+<a class="skip" href="#main">本文へ移動</a>
+<header class="topbar"><div class="wrap topbar-inner"><a class="brand" href="./"><span class="brand-mark">Q</span><span>資格ルート案内室</span></a><nav class="top-links" aria-label="主要メニュー"><a href="./#diagnosis">資格診断</a><a href="study/">無料学習</a><a href="plan.html">学習計画</a></nav></div></header>
+<main id="main" class="dashboard-page"><div class="wrap">
+  <header class="dashboard-intro"><p class="section-kicker">YOUR STUDY NOTE / マイページ</p><h1>学んだ分だけ、<br><em>ここに残る。</em></h1><p>診断結果や学習記録を、このブラウザにまとめます。会員登録は不要です。別の端末やブラウザとは同期されません。</p></header>
+  <section id="sharedResult" class="dash-panel" hidden aria-live="polite"><p class="section-kicker">SHARED RESULT</p><h2>共有された診断結果</h2><div id="sharedResultBody"></div><button class="btn btn-primary" id="saveSharedResult" type="button">この結果を保存する</button></section>
+  <section class="dash-panel" aria-labelledby="progressTitle"><div class="dash-head"><div><p class="section-kicker">LEARNING RECORD</p><h2 id="progressTitle">学習の進み具合</h2></div><a class="btn" href="study/">問題を解く →</a></div>
+    <div class="dash-stats"><article><span>今日解いた問題</span><strong id="todayCount">0</strong><small>問</small></article><article><span>今日の正答率</span><strong id="todayAccuracy">—</strong><small></small></article><article><span>累計回答数</span><strong id="totalCount">0</strong><small>問</small></article><article><span>累計正答率</span><strong id="totalAccuracy">—</strong><small></small></article></div>
+    <div class="dash-chart-wrap"><h3>直近7日間の学習</h3><div id="weekChart" class="week-chart" role="img" aria-label="直近7日間に解いた問題数"></div></div>
+    <div id="courseProgress" class="course-progress"></div>
+    <p class="dash-note" id="progressNote">学習ページで問題に回答すると、記録がここに反映されます。</p>
+  </section>
+  <section class="dash-panel" aria-labelledby="savedTitle"><div class="dash-head"><div><p class="section-kicker">SAVED ROUTES</p><h2 id="savedTitle">保存した診断結果</h2></div><a class="btn" href="./#diagnosis">診断する →</a></div><div id="savedResults" class="saved-results"></div><p class="dash-note">保存した結果はこのブラウザ内に保管されます。最大20件まで。</p></section>
+  <section class="dash-panel" aria-labelledby="compareTitle"><div class="dash-head"><div><p class="section-kicker">MY COMPARISON</p><h2 id="compareTitle">気になる資格を比べる</h2></div></div><p>比較したい資格を選んで、候補を自分で組み替えられます。掲載された目安は資格ガイドの登録情報に基づきます。</p>
+    <div class="compare-picker"><label>資格を追加<select id="qualificationPicker"><option value="">資格を選択</option></select></label><button class="btn" id="addQualification" type="button">比較に追加</button></div><div id="selectedQualifications" class="selected-quals"></div><div id="customComparison" class="custom-comparison"></div><p class="dash-note" id="compareStatus" role="status"></p>
+  </section>
+  <section class="dash-panel dash-data" aria-labelledby="dataTitle"><p class="section-kicker">BROWSER DATA</p><h2 id="dataTitle">記録について</h2><p>このページはブラウザ内の保存データを読み込みます。端末の共有利用時は、保存した結果が同じブラウザを使う人に見える場合があります。</p><button class="btn" id="exportData" type="button">学習・診断記録をJSONで書き出す</button> <button class="btn" id="clearSaved" type="button">保存した診断結果を消す</button><p class="dash-note" id="dataStatus" role="status"></p></section>
+</div></main>
+<footer class="site-footer"><div class="wrap"><a href="./">資格ルート案内室</a> · <a href="privacy.html">プライバシー</a></div></footer>
+</body></html>
