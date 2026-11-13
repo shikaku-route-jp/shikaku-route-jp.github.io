@@ -24,7 +24,7 @@
       row("受験・受講条件", item => escape(item.eligibility)) +
       row("受験料・受講料", item => escape(item.fee) + (item.verified ? `<small>掲載情報の確認日：${escape(item.verified)}</small>` : "")) +
       row("使う場面・学び方", item => escape(item.use)) +
-      row("詳しく確認", item => `${item.guide ? `<a href="${escape(item.guide)}">受験・学習ガイド →</a><br>` : ""}${item.source ? `<a href="${escape(item.source)}" target="_blank" rel="noopener noreferrer">公式の条件・料金 →</a>` : "公式の実施団体を確認"}`) +
+      row("受験・申込先を確認", item => `${item.guide ? `<a href="${escape(item.guide)}">受験・学習ガイド →</a><br>` : ""}${item.source ? `<a href="${escape(item.source)}" target="_blank" rel="noopener noreferrer">公式の試験案内・申込方法を確認 →</a>` : "公式の実施団体を確認"}`) +
       "</tbody></table>";
   }
   function render(ranked) {
