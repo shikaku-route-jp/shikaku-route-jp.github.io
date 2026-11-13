@@ -13,13 +13,12 @@
       verified: "2026-10-20"
     },
     "行政書士": {
-      type: "fixed",
-      next: "2026-11-08",
-      label: "2026年11月8日（日）",
-      application: "2026年度の申込受付は終了",
-      note: "13:00〜16:00。",
+      type: "pending",
+      label: "2027年度の日程は未公表",
+      application: "2026年度の申込受付・試験は終了",
+      note: "試験は例年11月の第2日曜日に実施されますが、2027年度の日程は公式発表後に確認してください。",
       url: "https://www.gyosei-shiken.or.jp/doc/guide/guide.html",
-      verified: "2026-10-05"
+      verified: "2026-11-13"
     },
     "日商簿記1級": {
       type: "fixed",
